@@ -27,29 +27,45 @@ function MarketPage() {
 
     <section
       id="search"
-      className="space-y-6"
+      className="space-y-8"
     >
 
-      <div>
+      {/* Header */}
 
-        <h2 className="text-2xl font-bold">
-          Stock Analysis
-        </h2>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-        <p className="text-slate-400">
-          Search any NSE stock and view AI insights.
-        </p>
+        <div>
+
+          <h1 className="text-3xl sm:text-4xl font-bold">
+
+            📈 AI Stock Analysis
+
+          </h1>
+
+          <p className="text-slate-400 mt-2">
+
+            Search any NSE stock and get AI-powered investment insights.
+
+          </p>
+
+        </div>
 
       </div>
+
+      {/* Search */}
 
       <SearchBar
         onSearch={handleSearch}
         loading={loading}
       />
 
+      {/* Market Overview */}
+
       <MarketOverview />
 
-      <div className="grid xl:grid-cols-2 gap-6">
+      {/* Main Cards */}
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         <StockCard data={analysis} />
 
@@ -57,31 +73,51 @@ function MarketPage() {
 
       </div>
 
+      {/* AI Score */}
+
       <AIScoreCard data={analysis} />
+
+      {/* Indicators */}
 
       <IndicatorsCard data={analysis} />
 
-      {analysis && (
+      {/* Buttons */}
 
-        <div className="flex gap-4 flex-wrap">
+      {
 
-          <button
-            onClick={handleAddWatchlist}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-5 py-3 rounded-lg"
-          >
-            ⭐ Add to Watchlist
-          </button>
+        analysis && (
 
-          <button
-            onClick={handleBuyStock}
-            className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-lg font-bold"
-          >
-            💰 Buy Stock
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4">
 
-        </div>
+            <button
 
-      )}
+              onClick={handleAddWatchlist}
+
+              className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl transition"
+
+            >
+
+              ⭐ Add to Watchlist
+
+            </button>
+
+            <button
+
+              onClick={handleBuyStock}
+
+              className="flex-1 bg-green-600 hover:bg-green-700 font-bold py-3 rounded-xl transition"
+
+            >
+
+              💰 Buy Stock
+
+            </button>
+
+          </div>
+
+        )
+
+      }
 
     </section>
 

@@ -19,11 +19,25 @@ function PortfolioPage() {
 
     <section className="space-y-6">
 
-      <h2 className="text-2xl font-bold">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-        Portfolio
+        <div>
 
-      </h2>
+          <h1 className="text-2xl sm:text-3xl font-bold">
+
+            📂 Portfolio
+
+          </h1>
+
+          <p className="text-slate-400 mt-1">
+
+            Manage your investments and transaction history.
+
+          </p>
+
+        </div>
+
+      </div>
 
       <Portfolio
 

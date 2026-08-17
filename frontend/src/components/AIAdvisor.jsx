@@ -8,21 +8,67 @@ function AIAdvisor() {
 
   const [advice, setAdvice] = useState("");
 
+  const [loading, setLoading] = useState(true);
+
   const user = getCurrentUser();
 
   useEffect(() => {
+
+    if (!user?.email) return;
 
     loadAdvice();
 
   }, []);
 
-  const loadAdvice = async () => {
+  async function loadAdvice() {
 
-    const res = await api.get(`/ai-advice/${user.email}`);
+    try {
 
-    setAdvice(res.data.advice);
+      const { data } = await api.get(
 
-  };
+        `/ai/recommendation/${user.email}`
+
+      );
+
+      if (data.suggestions?.length > 0) {
+
+        setAdvice(
+
+          data.suggestions.join("\n\n")
+
+        );
+
+      } else {
+
+        setAdvice(
+
+          "No AI recommendation available."
+
+        );
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      setAdvice(
+
+        "Unable to load AI recommendation."
+
+      );
+
+    }
+
+    finally {
+
+      setLoading(false);
+
+    }
+
+  }
 
   return (
 
@@ -36,7 +82,15 @@ function AIAdvisor() {
 
       <div className="text-slate-300 whitespace-pre-wrap leading-8">
 
-        {advice || "Loading..."}
+        {
+
+          loading
+
+            ? "Loading..."
+
+            : advice
+
+        }
 
       </div>
 

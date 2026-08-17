@@ -1,6 +1,5 @@
 import random
-
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from database.mongodb import otp_collection
 from database.mongodb import users
@@ -8,6 +7,7 @@ from database.mongodb import users
 from utils.security import hash_password
 from utils.send_email import send_email_otp
 from utils.send_telegram import send_telegram
+from services.notification_service import create_notification
 
 
 # -----------------------------
@@ -24,9 +24,7 @@ def generate_otp():
 def save_otp(user_data, otp):
 
     otp_collection.delete_many({
-
         "email": user_data.email
-
     })
 
     otp_collection.insert_one({
@@ -35,12 +33,11 @@ def save_otp(user_data, otp):
 
         "email": user_data.email,
 
-        # Plain password temporary store
         "password": user_data.password,
 
         "otp": otp,
 
-        "expires_at": datetime.utcnow() + timedelta(minutes=5)
+        "expires_at": datetime.now(timezone.utc) + timedelta(minutes=5)
 
     })
 
@@ -78,9 +75,6 @@ def create_and_send_otp(user_data):
 
     )
 
-    # -----------------------------
-    # Debug Logs
-    # -----------------------------
     print("\n" + "=" * 60)
     print("📧 Receiver Email :", user_data.email)
     print("🔐 Generated OTP  :", otp)
@@ -123,7 +117,7 @@ def verify_otp(email, otp):
 
         return False
 
-    if datetime.utcnow() > data["expires_at"]:
+    if datetime.now(timezone.utc) > data["expires_at"]:
 
         otp_collection.delete_one({
 
@@ -165,6 +159,16 @@ def verify_otp(email, otp):
 
     })
 
+    create_notification(
+
+        email=data["email"],
+
+        title="Welcome 🎉",
+
+        message="Your account has been created successfully."
+
+    )
+
     try:
 
         now = datetime.now()
@@ -196,6 +200,7 @@ def verify_otp(email, otp):
     })
 
     return True
+
 
 # -----------------------------
 # Resend OTP

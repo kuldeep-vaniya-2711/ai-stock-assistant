@@ -3,133 +3,155 @@ import api from "../services/api";
 
 export default function TopMoversCard() {
 
-    const [gainers, setGainers] = useState([]);
-    const [losers, setLosers] = useState([]);
+  const [gainers, setGainers] = useState([]);
 
-    useEffect(() => {
+  const [losers, setLosers] = useState([]);
 
-        load();
+  async function load() {
+    try {
+      const [gainersRes, losersRes] = await Promise.all([
+        api.get("/market/top-gainers"),
+        api.get("/market/top-losers"),
+      ]);
 
-    }, []);
-
-    async function load() {
-
-        try {
-
-            const gainersRes = await api.get("/market/top-gainers");
-
-            const losersRes = await api.get("/market/top-losers");
-
-            setGainers(gainersRes.data);
-
-            setLosers(losersRes.data);
-
-        }
-
-        catch (err) {
-
-            console.log(err);
-
-        }
-
+      setGainers(gainersRes.data);
+      setLosers(losersRes.data);
+    } catch (err) {
+      console.log(err);
     }
+  }
 
-    return (
+  useEffect(() => {
+    const fetchData = async () => {
+      await load();
+    };
+    fetchData();
+  }, []);
 
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6">
+  return (
 
-            <h2 className="text-2xl font-bold mb-6">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-                📈 Top Movers
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
-            </h2>
+        📈 Top Movers
 
-            <div className="grid md:grid-cols-2 gap-8">
+      </h2>
 
-                <div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                    <h3 className="text-green-400 font-bold mb-4">
+        {/* Top Gainers */}
 
-                        🚀 Top Gainers
+        <div>
 
-                    </h3>
+          <h3 className="text-lg font-bold text-green-400 mb-4">
 
-                    {
+            🚀 Top Gainers
 
-                        gainers.map(stock => (
+          </h3>
 
-                            <div
+          <div className="space-y-3">
 
-                                key={stock.symbol}
+            {gainers.length === 0 ? (
 
-                                className="flex justify-between py-2 border-b border-slate-800"
+              <p className="text-slate-500">
 
-                            >
+                No Data
 
-                                <span>
+              </p>
 
-                                    {stock.symbol}
+            ) : (
 
-                                </span>
+              gainers.map((stock) => (
 
-                                <span className="text-green-400">
+                <div
 
-                                    {stock.change}%
+                  key={stock.symbol}
 
-                                </span>
+                  className="flex items-center justify-between bg-slate-800 rounded-xl p-3 hover:bg-slate-700 transition"
 
-                            </div>
+                >
 
-                        ))
+                  <span className="font-medium">
 
-                    }
+                    {stock.symbol}
 
-                </div>
+                  </span>
 
-                <div>
+                  <span className="font-bold text-green-400 whitespace-nowrap">
 
-                    <h3 className="text-red-400 font-bold mb-4">
+                    +{stock.change}%
 
-                        📉 Top Losers
-
-                    </h3>
-
-                    {
-
-                        losers.map(stock => (
-
-                            <div
-
-                                key={stock.symbol}
-
-                                className="flex justify-between py-2 border-b border-slate-800"
-
-                            >
-
-                                <span>
-
-                                    {stock.symbol}
-
-                                </span>
-
-                                <span className="text-red-400">
-
-                                    {stock.change}%
-
-                                </span>
-
-                            </div>
-
-                        ))
-
-                    }
+                  </span>
 
                 </div>
 
-            </div>
+              ))
+
+            )}
+
+          </div>
 
         </div>
 
-    );
+        {/* Top Losers */}
+
+        <div>
+
+          <h3 className="text-lg font-bold text-red-400 mb-4">
+
+            📉 Top Losers
+
+          </h3>
+
+          <div className="space-y-3">
+
+            {losers.length === 0 ? (
+
+              <p className="text-slate-500">
+
+                No Data
+
+              </p>
+
+            ) : (
+
+              losers.map((stock) => (
+
+                <div
+
+                  key={stock.symbol}
+
+                  className="flex items-center justify-between bg-slate-800 rounded-xl p-3 hover:bg-slate-700 transition"
+
+                >
+
+                  <span className="font-medium">
+
+                    {stock.symbol}
+
+                  </span>
+
+                  <span className="font-bold text-red-400 whitespace-nowrap">
+
+                    {stock.change}%
+
+                  </span>
+
+                </div>
+
+              ))
+
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  );
 
 }

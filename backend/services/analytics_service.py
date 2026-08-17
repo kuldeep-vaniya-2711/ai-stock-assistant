@@ -6,92 +6,68 @@ def get_ai_insights(email):
     portfolio = get_portfolio(email)
 
     if len(portfolio) == 0:
-
         return {
-
             "investment": 0,
-
             "current_value": 0,
-
             "overall_profit": 0,
-
             "overall_return": 0,
-
             "best_stock": "-",
-
             "worst_stock": "-",
-
             "portfolio_return": 0,
-
             "risk": "Low",
-
             "diversification": 0,
-
             "health_score": 0,
-
             "recommendation": "Your portfolio is empty."
-
         }
 
-    investment = sum(
-
-        stock["investment"]
-
-        for stock in portfolio
-
-    )
-
-    current_value = sum(
-
-        stock["current_value"]
-
-        for stock in portfolio
-
-    )
+    investment = sum(stock["investment"] for stock in portfolio)
+    current_value = sum(stock["current_value"] for stock in portfolio)
 
     overall_profit = current_value - investment
 
     overall_return = 0
 
     if investment > 0:
-
         overall_return = round(
-
             (overall_profit / investment) * 100,
-
             2
-
         )
 
-    best = max(
+    # -----------------------------
+    # Best / Worst Stock
+    # -----------------------------
+    best = max(portfolio, key=lambda x: x["profit"])
+    worst = min(portfolio, key=lambda x: x["profit"])
 
-        portfolio,
+    # -----------------------------
+    # Diversification
+    # -----------------------------
+    weights = []
 
-        key=lambda x: x["profit"]
+    for stock in portfolio:
 
+        weight = (stock["investment"] / investment) * 100
+
+        weights.append(weight)
+
+    max_weight = max(weights)
+
+    diversification = round(
+        100 - max_weight,
+        2
     )
 
-    worst = min(
+    if diversification < 30:
+        diversification = 30
 
-        portfolio,
-
-        key=lambda x: x["profit"]
-
-    )
-
-    diversification = min(
-
-        len(portfolio) * 20,
-
-        100
-
-    )
-
-    if diversification < 40:
+    # -----------------------------
+    # Risk Calculation
+    # -----------------------------
+    if max_weight >= 60:
 
         risk = "High"
 
-    elif diversification < 70:
+    elif max_weight >= 35:
 
         risk = "Medium"
 
@@ -99,39 +75,87 @@ def get_ai_insights(email):
 
         risk = "Low"
 
-    if diversification >= 80:
+    # -----------------------------
+    # Health Score
+    # -----------------------------
+    health_score = 50
 
-        recommendation = "Excellent diversified portfolio."
+    # Profit
 
-    elif diversification >= 60:
+    if overall_return > 20:
 
-        recommendation = "Portfolio is well diversified."
+        health_score += 20
+
+    elif overall_return > 10:
+
+        health_score += 15
+
+    elif overall_return > 0:
+
+        health_score += 10
+
+    # Diversification
+
+    if diversification > 70:
+
+        health_score += 20
+
+    elif diversification > 50:
+
+        health_score += 15
 
     else:
 
-        recommendation = "Consider adding more sectors."
+        health_score += 5
 
-    health_score = min(
+    # Risk
 
-        100,
+    if risk == "Low":
 
-        round(
+        health_score += 10
 
-            diversification * 0.6 +
+    elif risk == "Medium":
 
-            (
+        health_score += 5
 
-                40 if risk == "Low"
+    health_score = min(100, round(health_score))
 
-                else 25 if risk == "Medium"
+    # -----------------------------
+    # AI Recommendation
+    # -----------------------------
+    if overall_return < 0:
 
-                else 10
-
-            )
-
+        recommendation = (
+            "Portfolio is in loss. Avoid panic selling "
+            "and review weak stocks."
         )
 
-    )
+    elif risk == "High":
+
+        recommendation = (
+            "Portfolio is highly concentrated. "
+            "Diversify into more sectors."
+        )
+
+    elif health_score >= 90:
+
+        recommendation = (
+            "Excellent Portfolio. Continue SIP and "
+            "hold quality stocks."
+        )
+
+    elif health_score >= 75:
+
+        recommendation = (
+            "Healthy Portfolio. Small diversification "
+            "can improve stability."
+        )
+
+    else:
+
+        recommendation = (
+            "Review portfolio allocation and rebalance."
+        )
 
     return {
 
@@ -143,11 +167,11 @@ def get_ai_insights(email):
 
         "overall_return": overall_return,
 
+        "portfolio_return": overall_return,
+
         "best_stock": best["symbol"],
 
         "worst_stock": worst["symbol"],
-
-        "portfolio_return": round(overall_profit, 2),
 
         "risk": risk,
 

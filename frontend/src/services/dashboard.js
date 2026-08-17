@@ -1,9 +1,13 @@
 import api from "./api";
 
-export const getDashboard = async (email) => {
+export async function getDashboard(email) {
 
-    const res = await api.get(`/dashboard/${email}`);
+  const { data } = await api.get(
 
-    return res.data;
+    `/dashboard/${email}`
 
-};
+  );
+
+  return data;
+
+}

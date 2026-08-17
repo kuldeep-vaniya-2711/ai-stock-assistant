@@ -1,6 +1,9 @@
-import { createContext, useContext } from "react";
+import {
+  createContext,
+  useContext,
+} from "react";
 
-const DashboardContext = createContext();
+const DashboardContext = createContext(null);
 
 export function DashboardProvider({
 
@@ -24,6 +27,22 @@ export function DashboardProvider({
 
 export function useDashboardContext() {
 
-  return useContext(DashboardContext);
+  const context = useContext(
+
+    DashboardContext
+
+  );
+
+  if (!context) {
+
+    throw new Error(
+
+      "useDashboardContext must be used inside DashboardProvider"
+
+    );
+
+  }
+
+  return context;
 
 }

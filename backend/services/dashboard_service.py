@@ -14,11 +14,11 @@ def dashboard_summary(email):
     total_investment = 0
     current_value = 0
 
-    top_gainer = None
-    top_loser = None
+    top_gainer = "-"
+    top_loser = "-"
 
-    highest_profit = -999999999
-    lowest_profit = 999999999
+    highest_profit = float("-inf")
+    lowest_profit = float("inf")
 
     for stock in stocks:
 

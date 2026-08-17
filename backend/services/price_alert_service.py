@@ -1,8 +1,9 @@
-from database.mongodb import price_alerts
-from services.market_service import get_live_price
 from datetime import datetime
 
+from database.mongodb import price_alerts
+from services.market_service import get_live_price
 from utils.send_telegram import send_telegram
+
 
 def create_alert(item):
 
@@ -21,48 +22,71 @@ def create_alert(item):
         }
 
     price_alerts.insert_one({
+
         "email": item.email,
+
         "symbol": item.symbol,
+
         "target_price": item.target_price,
-        "condition": item.condition
+
+        "condition": item.condition,
+
+        "created_at": datetime.now()
+
     })
 
     return {
+
         "success": True,
+
         "message": "Price Alert Created Successfully"
+
     }
 
 
 def get_alerts(email):
 
-    data = list(
+    return list(
+
         price_alerts.find(
+
             {"email": email},
+
             {"_id": 0}
+
         )
+
     )
 
-    return data
+
 def delete_alert(email, symbol, target_price):
 
-    result = price_alerts.delete_one(
-        {
-            "email": email,
-            "symbol": symbol,
-            "target_price": target_price
-        }
-    )
+    result = price_alerts.delete_one({
+
+        "email": email,
+
+        "symbol": symbol,
+
+        "target_price": target_price
+
+    })
 
     if result.deleted_count == 0:
 
         return {
+
             "success": False,
+
             "message": "Alert not found."
+
         }
 
     return {
+
         "success": True,
+
         "message": "Alert Deleted Successfully"
+
     }
 
 
@@ -74,9 +98,7 @@ def check_price_alerts():
 
     for alert in alerts:
 
-        current_price = get_live_price(
-            alert["symbol"]
-        )
+        current_price = get_live_price(alert["symbol"])
 
         if current_price is None:
             continue
@@ -95,21 +117,28 @@ def check_price_alerts():
         ):
             hit = True
 
-        if hit:
-            triggered.append(
-                {
-                    "email": alert["email"],
-                    "symbol": alert["symbol"],
-                    "target_price": alert["target_price"],
-                    "current_price": round(current_price, 2),
-                    "condition": alert["condition"]
-                }
-            )
+        if not hit:
+            continue
 
-            try:
-                now = datetime.now()
+        triggered.append({
 
-                message = f"""
+            "email": alert["email"],
+
+            "symbol": alert["symbol"],
+
+            "target_price": alert["target_price"],
+
+            "current_price": round(current_price, 2),
+
+            "condition": alert["condition"]
+
+        })
+
+        try:
+
+            now = datetime.now()
+
+            message = f"""
 🚨 <b>PRICE ALERT TRIGGERED</b>
 
 👤 User : {alert["email"]}
@@ -127,15 +156,18 @@ def check_price_alerts():
 ⏰ {now.strftime("%I:%M %p")}
 """
 
-                send_telegram(message)
+            send_telegram(message)
 
-                price_alerts.delete_one(
-                    {
-                        "_id": alert["_id"]
-                    }
-                )
+        except Exception as e:
 
-            except Exception as e:
-                print("Telegram Error :", e)
+            print("Telegram Error:", e)
+
+        finally:
+
+            price_alerts.delete_one({
+
+                "_id": alert["_id"]
+
+            })
 
     return triggered

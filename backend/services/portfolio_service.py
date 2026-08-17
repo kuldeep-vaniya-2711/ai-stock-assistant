@@ -96,10 +96,8 @@ def buy_stock(item):
         {"email": item.email},
         {
             "$inc": {
+                "wallet": -total_cost,
                 "experience": 10
-            },
-            "$set": {
-                "wallet": wallet - total_cost
             }
         }
     )
@@ -131,19 +129,19 @@ def sell_stock(item):
             "message": "Not enough quantity."
         }
 
-    total_amount = item.buy_price * item.quantity
+    # Live Market Price
+    live_price = get_live_price(item.symbol)
 
-    user = users.find_one({"email": item.email})
+    if live_price is None:
+        live_price = stock["buy_price"]
 
-    wallet = user.get("wallet", 5000)
+    total_amount = live_price * item.quantity
 
     users.update_one(
         {"email": item.email},
         {
-            "$set": {
-                "wallet": wallet + total_amount
-            },
             "$inc": {
+                "wallet": total_amount,
                 "experience": 5
             }
         }
@@ -176,7 +174,7 @@ def sell_stock(item):
         item.email,
         item.symbol,
         item.quantity,
-        item.buy_price,
+        round(live_price, 2),
         "SELL"
     )
 

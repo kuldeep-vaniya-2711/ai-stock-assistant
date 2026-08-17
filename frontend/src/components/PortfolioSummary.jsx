@@ -1,19 +1,50 @@
-function PortfolioSummary({
+function SummaryCard({
 
-  profile,
+  title,
+
+  value,
+
+  color = "text-white",
+
+}) {
+
+  return (
+
+    <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 sm:p-5 hover:border-cyan-500 transition">
+
+      <p className="text-slate-400 text-xs sm:text-sm">
+
+        {title}
+
+      </p>
+
+      <h2 className={`mt-3 text-xl sm:text-2xl lg:text-3xl font-bold break-words ${color}`}>
+
+        {value}
+
+      </h2>
+
+    </div>
+
+  );
+
+}
+
+function PortfolioSummary({
 
   portfolio,
 
 }) {
 
   let investment = 0;
+
   let current = 0;
 
   portfolio?.forEach((item) => {
 
-    investment += item.investment || 0;
+    investment += Number(item.investment || 0);
 
-    current += item.current_value || 0;
+    current += Number(item.current_value || 0);
 
   });
 
@@ -21,69 +52,51 @@ function PortfolioSummary({
 
   return (
 
-    <div className="bg-slate-900 rounded-xl p-6">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-      <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
-        Portfolio Summary
+        📋 Portfolio Summary
 
       </h2>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
-        <div>
+        <SummaryCard
 
-          <p className="text-slate-400">
+          title="Total Investment"
 
-            Total Investment
+          value={`₹ ${investment.toFixed(2)}`}
 
-          </p>
+        />
 
-          <h2 className="text-2xl font-bold">
+        <SummaryCard
 
-            ₹ {investment.toFixed(2)}
+          title="Current Value"
 
-          </h2>
+          value={`₹ ${current.toFixed(2)}`}
 
-        </div>
+          color="text-cyan-400"
 
-        <div>
+        />
 
-          <p className="text-slate-400">
+        <SummaryCard
 
-            Current Value
+          title="Net Profit"
 
-          </p>
+          value={`₹ ${pnl.toFixed(2)}`}
 
-          <h2 className="text-2xl font-bold">
+          color={
 
-            ₹ {current.toFixed(2)}
+            pnl >= 0
 
-          </h2>
+              ? "text-green-400"
 
-        </div>
+              : "text-red-400"
 
-        <div>
+          }
 
-          <p className="text-slate-400">
-
-            Net Profit
-
-          </p>
-
-          <h2
-            className={`text-2xl font-bold ${
-              pnl >= 0
-                ? "text-green-400"
-                : "text-red-400"
-            }`}
-          >
-
-            ₹ {pnl.toFixed(2)}
-
-          </h2>
-
-        </div>
+        />
 
       </div>
 

@@ -11,11 +11,14 @@ load_dotenv()
 EMAIL = os.getenv("EMAIL_ADDRESS")
 PASSWORD = os.getenv("EMAIL_PASSWORD")
 
-# print("EMAIL:", os.getenv("EMAIL_ADDRESS"))
-
-
 
 def send_email_otp(receiver_email, otp):
+
+    if not EMAIL or not PASSWORD:
+
+        print("Email credentials missing.")
+
+        return False
 
     subject = "AI Stock Assistant - Email Verification OTP"
 
@@ -44,26 +47,42 @@ AI Stock Assistant
 
     message.attach(MIMEText(body, "plain"))
 
+    server = None
+
     try:
 
         server = smtplib.SMTP("smtp.gmail.com", 587)
 
         server.starttls()
 
-        server.login(EMAIL, PASSWORD)
+        server.login(
 
-        server.sendmail(
             EMAIL,
-            receiver_email,
-            message.as_string()
+
+            PASSWORD
+
         )
 
-        server.quit()
+        server.sendmail(
+
+            EMAIL,
+
+            receiver_email,
+
+            message.as_string()
+
+        )
 
         return True
 
     except Exception as e:
 
-        print("Email Error :", e)
+        print("Email Error:", e)
 
         return False
+
+    finally:
+
+        if server:
+
+            server.quit()

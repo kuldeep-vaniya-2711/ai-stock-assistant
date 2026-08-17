@@ -4,124 +4,121 @@ import { getCurrentUser } from "../utils/auth";
 
 import {
 
-    PieChart,
-    Pie,
-    Cell,
-    Tooltip,
-    ResponsiveContainer
+  PieChart,
+
+  Pie,
+
+  Cell,
+
+  Tooltip,
+
+  ResponsiveContainer,
+
+  Legend,
 
 } from "recharts";
 
 const COLORS = [
 
-    "#06b6d4",
-    "#22c55e",
-    "#f59e0b",
-    "#ef4444",
-    "#8b5cf6",
-    "#3b82f6",
-    "#14b8a6"
+  "#06b6d4",
+
+  "#22c55e",
+
+  "#f59e0b",
+
+  "#ef4444",
+
+  "#8b5cf6",
+
+  "#3b82f6",
+
+  "#14b8a6",
 
 ];
 
 export default function PortfolioAllocationChart() {
 
-    const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
 
-    useEffect(() => {
+  useEffect(() => {
+    const loadPortfolioAllocation = async () => {
+      const email = getCurrentUser()?.email;
+      if (!email) return;
+      try {
+        const res = await api.get(`/portfolio/allocation/${email}`);
+        setData(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-        load();
+    loadPortfolioAllocation();
+  }, []);
 
-    }, []);
+  return (
 
-    async function load() {
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-        const email = getCurrentUser()?.email;
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
-        if (!email) return;
+        🥧 Portfolio Allocation
 
-        try {
+      </h2>
 
-            const res = await api.get(
+      <div className="h-72 sm:h-96">
 
-                `/portfolio/allocation/${email}`
+        <ResponsiveContainer width="100%" height="100%">
 
-            );
+          <PieChart>
 
-            setData(res.data);
+            <Pie
 
-        }
+              data={data}
 
-        catch (err) {
+              dataKey="value"
 
-            console.log(err);
+              nameKey="symbol"
 
-        }
+              outerRadius="75%"
 
-    }
+              label
 
-    return (
+            >
 
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6">
+              {
 
-            <h2 className="text-2xl font-bold mb-5">
+                data.map((entry, index) => (
 
-                🥧 Portfolio Allocation
+                  <Cell
 
-            </h2>
+                    key={index}
 
-            <div className="h-80">
+                    fill={
 
-                <ResponsiveContainer>
+                      COLORS[index % COLORS.length]
 
-                    <PieChart>
+                    }
 
-                        <Pie
+                  />
 
-                            data={data}
+                ))
 
-                            dataKey="value"
+              }
 
-                            nameKey="symbol"
+            </Pie>
 
-                            outerRadius={110}
+            <Tooltip />
 
-                            label
+            <Legend />
 
-                        >
+          </PieChart>
 
-                            {
+        </ResponsiveContainer>
 
-                                data.map((entry, index) => (
+      </div>
 
-                                    <Cell
+    </div>
 
-                                        key={index}
-
-                                        fill={
-
-                                            COLORS[index % COLORS.length]
-
-                                        }
-
-                                    />
-
-                                ))
-
-                            }
-
-                        </Pie>
-
-                        <Tooltip />
-
-                    </PieChart>
-
-                </ResponsiveContainer>
-
-            </div>
-
-        </div>
-
-    );
+  );
 
 }

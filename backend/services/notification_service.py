@@ -26,7 +26,7 @@ def create_notification(
 
 def get_notifications(email):
 
-    data = list(
+    return list(
 
         notifications.find(
 
@@ -34,16 +34,19 @@ def get_notifications(email):
 
             {"_id": 0}
 
-        ).sort("created_at", -1)
+        ).sort(
+
+            "created_at",
+            -1
+
+        )
 
     )
-
-    return data
 
 
 def mark_all_read(email):
 
-    notifications.update_many(
+    result = notifications.update_many(
 
         {
 
@@ -68,6 +71,8 @@ def mark_all_read(email):
     return {
 
         "success": True,
+
+        "updated": result.modified_count,
 
         "message": "Notifications Updated"
 

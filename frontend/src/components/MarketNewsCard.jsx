@@ -1,87 +1,91 @@
 import { useEffect, useState } from "react";
-
 import api from "../services/api";
 
 export default function MarketNewsCard() {
 
-    const [news, setNews] = useState([]);
+  const [news, setNews] = useState([]);
 
-    useEffect(() => {
+  useEffect(() => {
+    let mounted = true;
 
-        load();
+    (async () => {
+      try {
+        const res = await api.get("/market/news");
+        if (mounted) setNews(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    })();
 
-    }, []);
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-    async function load() {
+  return (
 
-        try {
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-            const res = await api.get("/market/news");
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
-            setNews(res.data);
+        📰 Market News
+
+      </h2>
+
+      <div className="space-y-4">
+
+        {
+
+          news.length === 0 ? (
+
+            <p className="text-slate-500">
+
+              No News Available
+
+            </p>
+
+          ) : (
+
+            news.map((item, index) => (
+
+              <a
+
+                key={index}
+
+                href={item.link}
+
+                target="_blank"
+
+                rel="noreferrer"
+
+                className="block bg-slate-800 rounded-xl p-4 hover:bg-slate-700 hover:border-cyan-500 border border-transparent transition"
+
+              >
+
+                <h3 className="font-semibold text-sm sm:text-base leading-6">
+
+                  {item.title}
+
+                </h3>
+
+                <p className="text-xs text-slate-400 mt-3">
+
+                  {item.published}
+
+                </p>
+
+              </a>
+
+            ))
+
+          )
 
         }
 
-        catch (err) {
+      </div>
 
-            console.log(err);
+    </div>
 
-        }
-
-    }
-
-    return (
-
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6">
-
-            <h2 className="text-2xl font-bold mb-6">
-
-                📰 Market News
-
-            </h2>
-
-            <div className="space-y-5">
-
-                {
-
-                    news.map((item, index) => (
-
-                        <a
-
-                            key={index}
-
-                            href={item.link}
-
-                            target="_blank"
-
-                            rel="noreferrer"
-
-                            className="block border-b border-slate-800 pb-4 hover:text-cyan-400"
-
-                        >
-
-                            <h3 className="font-semibold">
-
-                                {item.title}
-
-                            </h3>
-
-                            <p className="text-xs text-slate-400 mt-2">
-
-                                {item.published}
-
-                            </p>
-
-                        </a>
-
-                    ))
-
-                }
-
-            </div>
-
-        </div>
-
-    );
+  );
 
 }

@@ -12,7 +12,6 @@ def get_growth_data(email: str):
     )
 
     if not stocks:
-
         return {
             "labels": [],
             "values": []
@@ -22,12 +21,10 @@ def get_growth_data(email: str):
 
     for stock in stocks:
 
-        live_price = get_live_price(
-            stock["symbol"]
-        )
+        live_price = get_live_price(stock["symbol"])
 
         if live_price is None:
-            continue
+            live_price = stock["buy_price"]
 
         total_value += (
             live_price *
@@ -45,27 +42,16 @@ def get_growth_data(email: str):
     ]
 
     values = [
-
         round(total_value * 0.55, 2),
-
         round(total_value * 0.63, 2),
-
         round(total_value * 0.71, 2),
-
         round(total_value * 0.79, 2),
-
         round(total_value * 0.86, 2),
-
         round(total_value * 0.93, 2),
-
         round(total_value, 2)
-
     ]
 
     return {
-
         "labels": labels,
-
         "values": values
-
     }

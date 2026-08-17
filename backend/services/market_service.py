@@ -2,7 +2,7 @@ import yfinance as yf
 import math
 
 
-TOP_GAINER_SYMBOLS = [
+TOP_STOCK_SYMBOLS = [
     "RELIANCE.NS",
     "TCS.NS",
     "INFY.NS",
@@ -16,14 +16,13 @@ TOP_GAINER_SYMBOLS = [
 ]
 
 
-# ----------------------------
+# --------------------------------
 # Helper
-# ----------------------------
+# --------------------------------
 
 def clean_number(value):
 
     try:
-
         value = float(value)
 
         if math.isnan(value) or math.isinf(value):
@@ -32,16 +31,12 @@ def clean_number(value):
         return value
 
     except:
-
         return 0
 
 
-
-# ----------------------------
+# --------------------------------
 # Live Price
-# IMPORTANT:
-# Portfolio system uses this
-# ----------------------------
+# --------------------------------
 
 def get_live_price(symbol):
 
@@ -49,283 +44,191 @@ def get_live_price(symbol):
 
         stock = yf.Ticker(symbol)
 
-        history = stock.history(period="1d")
+        try:
+            price = stock.fast_info.get("lastPrice")
 
+            if price:
+                return round(clean_number(price), 2)
+
+        except:
+            pass
+
+        history = stock.history(period="1d")
 
         if history.empty:
             return None
 
-
-        price = history["Close"].iloc[-1]
-
-
-        price = clean_number(price)
-
+        price = clean_number(history["Close"].iloc[-1])
 
         if price == 0:
             return None
 
-
-        return round(price,2)
-
+        return round(price, 2)
 
     except Exception:
-
         return None
 
 
+# --------------------------------
+# Common Helper
+# --------------------------------
+
+def get_price_change(symbol, period="2d"):
+
+    try:
+
+        stock = yf.Ticker(symbol)
+
+        data = stock.history(period=period)
+
+        if len(data) < 2:
+            return None
+
+        previous = clean_number(data["Close"].iloc[-2])
+        current = clean_number(data["Close"].iloc[-1])
+
+        if previous <= 0:
+            return None
+
+        change = ((current - previous) / previous) * 100
+
+        return {
+            "symbol": symbol,
+            "price": round(current, 2),
+            "change": round(change, 2)
+        }
+
+    except Exception:
+        return None
 
 
-# ----------------------------
+# --------------------------------
 # Top Gainers
-# ----------------------------
+# --------------------------------
 
 def get_top_gainers():
 
-    gainers=[]
+    gainers = []
 
+    for symbol in TOP_STOCK_SYMBOLS:
 
-    for symbol in TOP_GAINER_SYMBOLS:
+        item = get_price_change(symbol)
 
-        try:
-
-            stock=yf.Ticker(symbol)
-
-            data=stock.history(period="2d")
-
-
-            if len(data)<2:
-                continue
-
-
-            previous=clean_number(
-                data["Close"].iloc[-2]
-            )
-
-            current=clean_number(
-                data["Close"].iloc[-1]
-            )
-
-
-            if previous==0:
-                continue
-
-
-            change=((current-previous)/previous)*100
-
-
-            gainers.append({
-
-                "symbol":symbol,
-                "price":round(current,2),
-                "change":round(change,2)
-
-            })
-
-
-        except:
-
-            continue
-
-
+        if item:
+            gainers.append(item)
 
     gainers.sort(
-        key=lambda x:x["change"],
+        key=lambda x: x["change"],
         reverse=True
     )
-
 
     return gainers[:5]
 
 
-
-
-
-# ----------------------------
+# --------------------------------
 # Top Losers
-# ----------------------------
+# --------------------------------
 
 def get_top_losers():
 
-    losers=[]
+    losers = []
 
+    for symbol in TOP_STOCK_SYMBOLS:
 
-    for symbol in TOP_GAINER_SYMBOLS:
+        item = get_price_change(symbol)
 
-        try:
-
-            stock=yf.Ticker(symbol)
-
-            data=stock.history(period="2d")
-
-
-            if len(data)<2:
-                continue
-
-
-            previous=clean_number(
-                data["Close"].iloc[-2]
-            )
-
-            current=clean_number(
-                data["Close"].iloc[-1]
-            )
-
-
-            if previous==0:
-                continue
-
-
-            change=((current-previous)/previous)*100
-
-
-            losers.append({
-
-                "symbol":symbol,
-                "price":round(current,2),
-                "change":round(change,2)
-
-            })
-
-
-        except:
-
-            continue
-
-
+        if item:
+            losers.append(item)
 
     losers.sort(
-        key=lambda x:x["change"]
+        key=lambda x: x["change"]
     )
-
 
     return losers[:5]
 
 
-
-
-
-# ----------------------------
+# --------------------------------
 # Trending Stocks
-# ----------------------------
+# --------------------------------
 
 def get_trending_stocks():
 
-    trending=[]
+    trending = []
 
-
-    for symbol in TOP_GAINER_SYMBOLS:
-
-        try:
-
-            stock=yf.Ticker(symbol)
-
-            data=stock.history(period="1mo")
-
-
-            if len(data)<5:
-                continue
-
-
-            old=clean_number(
-                data["Close"].iloc[-5]
-            )
-
-
-            current=clean_number(
-                data["Close"].iloc[-1]
-            )
-
-
-            if old==0:
-                continue
-
-
-            change=((current-old)/old)*100
-
-
-            trending.append({
-
-                "symbol":symbol,
-                "price":round(current,2),
-                "change":round(change,2)
-
-            })
-
-
-        except:
-
-            continue
-
-
-
-    trending.sort(
-        key=lambda x:abs(x["change"]),
-        reverse=True
-    )
-
-
-    return trending[:5]
-
-
-
-
-
-
-
-# ----------------------------
-# Most Active Stocks
-# ----------------------------
-
-def get_most_active_stocks():
-
-    active = []
-
-    for symbol in TOP_GAINER_SYMBOLS:
+    for symbol in TOP_STOCK_SYMBOLS:
 
         try:
 
             stock = yf.Ticker(symbol)
 
-            data = stock.history(period="2d")
+            data = stock.history(period="7d")
 
-            if len(data) < 2:
+            if len(data) < 5:
                 continue
 
-            previous = clean_number(data["Close"].iloc[-2])
+            old = clean_number(data["Close"].iloc[-5])
+
             current = clean_number(data["Close"].iloc[-1])
 
-            if previous <= 0:
+            if old <= 0:
                 continue
 
-            change = ((current - previous) / previous) * 100
+            change = ((current - old) / old) * 100
 
-            # Safe Volume
+            trending.append({
+
+                "symbol": symbol,
+                "price": round(current, 2),
+                "change": round(change, 2)
+
+            })
+
+        except Exception:
+            continue
+
+    trending.sort(
+        key=lambda x: abs(x["change"]),
+        reverse=True
+    )
+
+    return trending[:5]
+
+
+# --------------------------------
+# Most Active Stocks
+# --------------------------------
+
+def get_most_active_stocks():
+
+    active = []
+
+    for symbol in TOP_STOCK_SYMBOLS:
+
+        item = get_price_change(symbol)
+
+        if not item:
+            continue
+
+        try:
+
+            stock = yf.Ticker(symbol)
+
             volume = 0
 
             try:
-                info = stock.fast_info
 
-                raw_volume = info.get("last_volume", 0)
-
-                if raw_volume is None:
-                    raw_volume = 0
-
-                raw_volume = clean_number(raw_volume)
-
-                volume = int(raw_volume)
+                volume = int(
+                    clean_number(
+                        stock.fast_info.get("last_volume", 0)
+                    )
+                )
 
             except:
                 volume = 0
 
-            active.append({
+            item["volume"] = volume
 
-                "symbol": symbol,
-                "price": round(current, 2),
-                "change": round(change, 2),
-                "volume": volume
-
-            })
+            active.append(item)
 
         except Exception:
             continue

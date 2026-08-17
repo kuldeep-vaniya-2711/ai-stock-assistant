@@ -3,130 +3,163 @@ import api from "../services/api";
 
 export default function StockScreener() {
 
-    const [stocks, setStocks] = useState([]);
+  const [stocks, setStocks] = useState([]);
 
-    useEffect(() => {
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const res = await api.get("/screener");
+        setStocks(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-        loadStocks();
+    fetchStocks();
+  }, []);
 
-    }, []);
+  return (
 
-    async function loadStocks() {
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-        try {
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
-            const res = await api.get("/screener");
+        🔎 AI Stock Screener
 
-            setStocks(res.data);
+      </h2>
 
-        }
+      <div className="overflow-x-auto">
 
-        catch (err) {
+        <table className="w-full min-w-[650px]">
 
-            console.log(err);
+          <thead>
 
-        }
+            <tr className="border-b border-slate-700 text-slate-300">
 
-    }
+              <th className="py-3 text-left">
 
-    return (
+                Stock
 
-        <div className="bg-slate-900 rounded-xl p-6 shadow-lg">
+              </th>
 
-            <h2 className="text-2xl font-bold mb-6">
-                🔎 AI Stock Screener
-            </h2>
+              <th className="py-3 text-center">
 
-            <div className="overflow-x-auto">
+                Price
 
-                <table className="w-full table-fixed border-collapse">
+              </th>
 
-                    <thead>
+              <th className="py-3 text-center">
 
-                        <tr className="border-b border-slate-700 text-slate-300">
+                RSI
 
-                            <th className="w-1/4 py-3 text-left">
-                                Stock
-                            </th>
+              </th>
 
-                            <th className="w-1/4 py-3 text-center">
-                                Price
-                            </th>
+              <th className="py-3 text-center">
 
-                            <th className="w-1/4 py-3 text-center">
-                                RSI
-                            </th>
+                Recommendation
 
-                            <th className="w-1/4 py-3 text-center">
-                                Recommendation
-                            </th>
+              </th>
 
-                        </tr>
+            </tr>
 
-                    </thead>
+          </thead>
 
-                    <tbody>
+          <tbody>
 
-                        {
+            {
 
-                            stocks.map((stock) => (
+              stocks.length === 0 ? (
 
-                                <tr
-                                    key={stock.symbol}
-                                    className="border-b border-slate-800 hover:bg-slate-800 transition"
-                                >
+                <tr>
 
-                                    <td className="py-4 font-semibold text-left whitespace-nowrap">
+                  <td
 
-                                        {stock.symbol}
+                    colSpan={4}
 
-                                    </td>
+                    className="py-8 text-center text-slate-500"
 
-                                    <td className="py-4 text-center">
+                  >
 
-                                        ₹{stock.price}
+                    No Stocks Found
 
-                                    </td>
+                  </td>
 
-                                    <td className="py-4 text-center">
+                </tr>
 
-                                        {stock.rsi}
+              ) : (
 
-                                    </td>
+                stocks.map((stock) => (
 
-                                    <td className="py-4 text-center">
+                  <tr
 
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-sm font-semibold
-                                            ${
-                                                stock.recommendation === "BUY"
-                                                    ? "bg-green-500/20 text-green-400"
-                                                    : stock.recommendation === "SELL"
-                                                    ? "bg-red-500/20 text-red-400"
-                                                    : "bg-yellow-500/20 text-yellow-400"
-                                            }`}
-                                        >
+                    key={stock.symbol}
 
-                                            {stock.recommendation}
+                    className="border-b border-slate-800 hover:bg-slate-800 transition"
 
-                                        </span>
+                  >
 
-                                    </td>
+                    <td className="py-4 font-semibold whitespace-nowrap">
 
-                                </tr>
+                      {stock.symbol}
 
-                            ))
+                    </td>
 
-                        }
+                    <td className="py-4 text-center whitespace-nowrap">
 
-                    </tbody>
+                      ₹{stock.price}
 
-                </table>
+                    </td>
 
-            </div>
+                    <td className="py-4 text-center">
 
-        </div>
+                      {stock.rsi}
 
-    );
+                    </td>
+
+                    <td className="py-4 text-center">
+
+                      <span
+
+                        className={`px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap
+
+                        ${
+
+                          stock.recommendation === "BUY"
+
+                            ? "bg-green-500/20 text-green-400"
+
+                            : stock.recommendation === "SELL"
+
+                            ? "bg-red-500/20 text-red-400"
+
+                            : "bg-yellow-500/20 text-yellow-400"
+
+                        }`}
+
+                      >
+
+                        {stock.recommendation}
+
+                      </span>
+
+                    </td>
+
+                  </tr>
+
+                ))
+
+              )
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  );
 
 }

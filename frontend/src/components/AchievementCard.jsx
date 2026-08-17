@@ -1,134 +1,134 @@
 function Badge({
 
-    title,
+  title,
 
-    icon,
+  icon,
 
-    unlocked,
+  unlocked,
 
 }) {
 
-    return (
+  return (
 
-        <div
+    <div
 
-            className={`rounded-xl p-5 border transition duration-300
+      className={`rounded-2xl border p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1
 
-            ${
+      ${
 
-                unlocked
+        unlocked
 
-                    ? "bg-slate-900 border-green-500 hover:scale-105"
+          ? "bg-slate-900 border-green-500 hover:shadow-green-500/20"
 
-                    : "bg-slate-800 border-slate-700 opacity-60"
+          : "bg-slate-800 border-slate-700 opacity-70"
 
-            }`}
+      }`}
 
-        >
+    >
 
-            <div className="text-5xl">
+      <div className="text-4xl sm:text-5xl">
 
-                {icon}
+        {icon}
 
-            </div>
+      </div>
 
-            <h3 className="mt-4 font-bold text-lg">
+      <h3 className="mt-4 text-lg font-bold break-words">
 
-                {title}
+        {title}
 
-            </h3>
+      </h3>
 
-            <p className="mt-2 text-sm">
+      <p className="mt-2 text-sm text-slate-400">
 
-                {
+        {
 
-                    unlocked
+          unlocked
 
-                        ? "Unlocked ✅"
+            ? "Unlocked ✅"
 
-                        : "Locked 🔒"
+            : "Locked 🔒"
 
-                }
+        }
 
-            </p>
+      </p>
 
-        </div>
+    </div>
 
-    );
+  );
 
 }
 
 function AchievementCard({
 
-    profile,
+  profile,
 
-    portfolio,
+  portfolio,
 
 }) {
 
-    const xp = profile?.experience || 0;
+  const xp = profile?.experience || 0;
 
-    const holdings = portfolio?.length || 0;
+  const holdings = portfolio?.length || 0;
 
-    const wallet = profile?.wallet || 0;
+  const wallet = profile?.wallet || 0;
 
-    return (
+  return (
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-lg">
 
-            <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
-                🏅 Achievements
+        🏅 Achievements
 
-            </h2>
+      </h2>
 
-            <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
 
-                <Badge
+        <Badge
 
-                    title="First Investment"
+          title="First Investment"
 
-                    icon="🎯"
+          icon="🎯"
 
-                    unlocked={holdings >= 1}
+          unlocked={holdings >= 1}
 
-                />
+        />
 
-                <Badge
+        <Badge
 
-                    title="Investor"
+          title="Investor"
 
-                    icon="📈"
+          icon="📈"
 
-                    unlocked={holdings >= 5}
+          unlocked={holdings >= 5}
 
-                />
+        />
 
-                <Badge
+        <Badge
 
-                    title="XP Master"
+          title="XP Master"
 
-                    icon="⭐"
+          icon="⭐"
 
-                    unlocked={xp >= 250}
+          unlocked={xp >= 250}
 
-                />
+        />
 
-                <Badge
+        <Badge
 
-                    title="Wealth Builder"
+          title="Wealth Builder"
 
-                    icon="💰"
+          icon="💰"
 
-                    unlocked={wallet >= 10000}
+          unlocked={wallet >= 10000}
 
-                />
+        />
 
-            </div>
+      </div>
 
-        </div>
+    </div>
 
-    );
+  );
 
 }
 

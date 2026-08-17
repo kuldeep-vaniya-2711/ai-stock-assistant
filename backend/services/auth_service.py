@@ -9,6 +9,7 @@ from utils.security import (
 )
 
 from utils.send_telegram import send_telegram
+from services.notification_service import create_notification
 
 
 # ----------------------------------
@@ -17,20 +18,23 @@ from utils.send_telegram import send_telegram
 
 def register_user(user):
 
-    existing_user = users.find_one(
-        {
-            "email": user.email
-        }
-    )
+    existing_user = users.find_one({
+
+        "email": user.email
+
+    })
 
     if existing_user:
 
         return {
+
             "success": False,
+
             "message": "Email already registered."
+
         }
 
-    new_user = {
+    users.insert_one({
 
         "name": user.name,
 
@@ -38,20 +42,23 @@ def register_user(user):
 
         "password": hash_password(user.password),
 
-        # Paper Trading Defaults
         "wallet": 5000.0,
 
         "level": "Beginner",
 
         "experience": 0
 
-    }
+    })
 
-    users.insert_one(new_user)
+    create_notification(
 
-    # ----------------------------
-    # Telegram Notification
-    # ----------------------------
+        email=user.email,
+
+        title="Welcome 🎉",
+
+        message="Your account has been created successfully."
+
+    )
 
     try:
 
@@ -94,11 +101,11 @@ def register_user(user):
 
 def login_user(user):
 
-    existing_user = users.find_one(
-        {
-            "email": user.email
-        }
-    )
+    existing_user = users.find_one({
+
+        "email": user.email
+
+    })
 
     if not existing_user:
 
@@ -111,8 +118,11 @@ def login_user(user):
         }
 
     if not verify_password(
+
         user.password,
+
         existing_user["password"]
+
     ):
 
         return {
@@ -149,20 +159,11 @@ def login_user(user):
 
             "email": existing_user["email"],
 
-            "wallet": existing_user.get(
-                "wallet",
-                5000.0
-            ),
+            "wallet": existing_user.get("wallet", 5000.0),
 
-            "level": existing_user.get(
-                "level",
-                "Beginner"
-            ),
+            "level": existing_user.get("level", "Beginner"),
 
-            "experience": existing_user.get(
-                "experience",
-                0
-            )
+            "experience": existing_user.get("experience", 0)
 
         }
 

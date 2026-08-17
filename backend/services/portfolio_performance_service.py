@@ -14,12 +14,12 @@ def get_portfolio_performance(email: str):
     if not stocks:
 
         return {
+            "investment": 0,
+            "current_value": 0,
             "best_stock": "-",
             "best_return": 0,
             "worst_stock": "-",
-            "worst_return": 0,
-            "investment": 0,
-            "current_value": 0
+            "worst_return": 0
         }
 
     best_stock = "-"
@@ -33,12 +33,10 @@ def get_portfolio_performance(email: str):
 
     for stock in stocks:
 
-        live_price = get_live_price(
-            stock["symbol"]
-        )
+        live_price = get_live_price(stock["symbol"])
 
         if live_price is None:
-            continue
+            live_price = stock["buy_price"]
 
         investment = (
             stock["buy_price"] *
@@ -52,6 +50,9 @@ def get_portfolio_performance(email: str):
 
         total_investment += investment
         total_current += current_value
+
+        if investment == 0:
+            continue
 
         profit = current_value - investment
 

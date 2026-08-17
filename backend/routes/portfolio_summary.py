@@ -12,4 +12,5 @@ router = APIRouter(
 
 @router.get("/{email}")
 def summary(email: str):
+
     return get_portfolio_summary(email)

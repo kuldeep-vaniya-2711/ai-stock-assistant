@@ -1,5 +1,29 @@
 import { useDashboardContext } from "../context/DashboardContext";
 
+function SummaryCard({ title, value, color }) {
+
+    return (
+
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-lg hover:border-cyan-500 transition">
+
+            <h3 className="text-slate-400 text-sm">
+
+                {title}
+
+            </h3>
+
+            <h1 className={`mt-3 text-xl sm:text-2xl lg:text-3xl font-bold break-words ${color}`}>
+
+                {value}
+
+            </h1>
+
+        </div>
+
+    );
+
+}
+
 function DashboardSummary() {
 
     const { analytics } = useDashboardContext();
@@ -8,7 +32,7 @@ function DashboardSummary() {
 
         return (
 
-            <div className="bg-slate-900 rounded-xl p-6">
+            <div className="bg-slate-900 rounded-2xl p-6 text-center">
 
                 Loading Dashboard...
 
@@ -20,79 +44,67 @@ function DashboardSummary() {
 
     return (
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
 
-            <div className="bg-slate-900 p-6 rounded-xl">
+            <SummaryCard
 
-                <h3>Total Investment</h3>
+                title="Total Investment"
 
-                <h1 className="text-3xl font-bold">
+                value={`₹ ${analytics.investment}`}
 
-                    ₹ {analytics.investment}
+                color="text-white"
 
-                </h1>
+            />
 
-            </div>
+            <SummaryCard
 
-            <div className="bg-slate-900 p-6 rounded-xl">
+                title="Current Value"
 
-                <h3>Current Value</h3>
+                value={`₹ ${analytics.current_value}`}
 
-                <h1 className="text-3xl font-bold text-cyan-400">
+                color="text-cyan-400"
 
-                    ₹ {analytics.current_value}
+            />
 
-                </h1>
+            <SummaryCard
 
-            </div>
+                title="Overall Profit"
 
-            <div className="bg-slate-900 p-6 rounded-xl">
+                value={`₹ ${analytics.overall_profit}`}
 
-                <h3>Overall Profit</h3>
+                color="text-green-400"
 
-                <h1 className="text-3xl font-bold text-green-400">
+            />
 
-                    ₹ {analytics.overall_profit}
+            <SummaryCard
 
-                </h1>
+                title="Overall Return"
 
-            </div>
+                value={`${analytics.overall_return}%`}
 
-            <div className="bg-slate-900 p-6 rounded-xl">
+                color="text-yellow-400"
 
-                <h3>Overall Return</h3>
+            />
 
-                <h1 className="text-3xl font-bold text-yellow-400">
+            <SummaryCard
 
-                    {analytics.overall_return}%
+                title="Top Gainer"
 
-                </h1>
+                value={analytics.top_gainer || "--"}
 
-            </div>
+                color="text-green-400"
 
-            <div className="bg-slate-900 p-6 rounded-xl">
+            />
 
-                <h3>Top Gainer</h3>
+            <SummaryCard
 
-                <h1 className="text-3xl font-bold">
+                title="Top Loser"
 
-                    {analytics.top_gainer}
+                value={analytics.top_loser || "--"}
 
-                </h1>
+                color="text-red-400"
 
-            </div>
-
-            <div className="bg-slate-900 p-6 rounded-xl">
-
-                <h3>Top Loser</h3>
-
-                <h1 className="text-3xl font-bold">
-
-                    {analytics.top_loser}
-
-                </h1>
-
-            </div>
+            />
 
         </div>
 

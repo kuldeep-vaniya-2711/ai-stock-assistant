@@ -14,23 +14,42 @@ def save_transaction(
 ):
 
     transactions.insert_one({
+
         "email": email,
+
         "symbol": symbol,
-        "type": transaction_type,
-        "quantity": quantity,
-        "price": price,
-        "total": quantity * price,
+
+        "transaction_type": transaction_type,
+
+        "quantity": int(quantity),
+
+        "price": round(float(price), 2),
+
+        "total": round(float(quantity) * float(price), 2),
+
         "date": datetime.now()
+
     })
 
 
 def get_transactions(email):
 
     data = list(
+
         transactions.find(
+
             {"email": email},
+
             {"_id": 0}
-        ).sort("date", -1)
+
+        ).sort(
+
+            "date",
+
+            -1
+
+        )
+
     )
 
     return data

@@ -1,44 +1,93 @@
 import api from "./api";
 
-export const buyStock = async (
+
+// ----------------------------
+// Buy Stock
+// ----------------------------
+export async function buyStock(
+
   email,
+
   symbol,
+
   quantity,
+
   buy_price
-) => {
 
-  const response = await api.post("/portfolio/buy", {
-    email,
-    symbol,
-    quantity,
-    buy_price,
-  });
+) {
 
-  return response.data;
-};
+  const { data } = await api.post(
 
-export const sellStock = async (
-  email,
-  symbol,
-  quantity,
-  buy_price
-) => {
+    "/portfolio/buy",
 
-  const response = await api.post("/portfolio/sell", {
-    email,
-    symbol,
-    quantity,
-    buy_price,
-  });
+    {
 
-  return response.data;
-};
+      email,
 
-export const getPortfolio = async (email) => {
+      symbol,
 
-  const response = await api.get(
-    `/portfolio/${email}`
+      quantity,
+
+      buy_price
+
+    }
+
   );
 
-  return response.data;
-};
+  return data;
+
+}
+
+
+// ----------------------------
+// Sell Stock
+// ----------------------------
+export async function sellStock(
+
+  email,
+
+  symbol,
+
+  quantity,
+
+  buy_price
+
+) {
+
+  const { data } = await api.post(
+
+    "/portfolio/sell",
+
+    {
+
+      email,
+
+      symbol,
+
+      quantity,
+
+      buy_price
+
+    }
+
+  );
+
+  return data;
+
+}
+
+
+// ----------------------------
+// Portfolio
+// ----------------------------
+export async function getPortfolio(email) {
+
+  const { data } = await api.get(
+
+    `/portfolio/${email}`
+
+  );
+
+  return data;
+
+}

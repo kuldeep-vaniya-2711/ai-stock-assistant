@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -18,66 +18,99 @@ import NewsPage from "./pages/NewsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AIPage from "./pages/AIPage";
 
-
 import { DashboardProvider } from "./context/DashboardContext";
 import useDashboard from "./hooks/useDashboard";
 
 function DashboardRoutes() {
-
   const dashboard = useDashboard();
 
   return (
-
     <DashboardProvider value={dashboard}>
-
       <Routes>
 
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* Public Routes */}
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={<Navigate to="/login" replace />}
+        />
 
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+          path="/verify-otp"
+          element={<VerifyOTP />}
+        />
+
+        {/* Protected Routes */}
 
         <Route element={<ProtectedRoute />}>
 
-          <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route
+            path="/dashboard"
+            element={<DashboardLayout />}
+          >
 
-            <Route index element={<DashboardHome />} />
+            <Route
+              index
+              element={<DashboardHome />}
+            />
 
-            <Route path="market" element={<MarketPage />} />
+            <Route
+              path="market"
+              element={<MarketPage />}
+            />
 
-            <Route path="portfolio" element={<PortfolioPage />} />
+            <Route
+              path="portfolio"
+              element={<PortfolioPage />}
+            />
 
-            <Route path="watchlist" element={<WatchlistPage />} />
+            <Route
+              path="watchlist"
+              element={<WatchlistPage />}
+            />
 
-            <Route path="alerts" element={<AlertsPage />} />
+            <Route
+              path="alerts"
+              element={<AlertsPage />}
+            />
 
-            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route
+              path="analytics"
+              element={<AnalyticsPage />}
+            />
 
-            <Route path="news" element={<NewsPage />} />
+            <Route
+              path="news"
+              element={<NewsPage />}
+            />
 
-            <Route path="profile" element={<ProfilePage />} />
+            <Route
+              path="profile"
+              element={<ProfilePage />}
+            />
 
-<Route
-
-  path="ai"
-
-  element={<AIPage />}
-
-/>
+            <Route
+              path="ai"
+              element={<AIPage />}
+            />
 
           </Route>
 
         </Route>
 
       </Routes>
-
     </DashboardProvider>
-
   );
-
 }
 
 export default DashboardRoutes;

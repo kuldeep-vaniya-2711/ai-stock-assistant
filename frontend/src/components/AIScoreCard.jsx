@@ -2,7 +2,23 @@ import { FaRobot } from "react-icons/fa";
 
 function AIScoreCard({ data }) {
 
-    if (!data) return null;
+    if (!data) {
+
+        return (
+
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
+
+                <p className="text-slate-400">
+
+                    AI Score unavailable.
+
+                </p>
+
+            </div>
+
+        );
+
+    }
 
     return (
 
@@ -18,11 +34,14 @@ function AIScoreCard({ data }) {
 
             <div className="space-y-4">
 
-                {data.score_breakdown?.map((item, index) => (
+                {data.score_breakdown?.map((item) => (
 
                     <div
-                        key={index}
+
+                        key={item.title}
+
                         className="flex justify-between items-center bg-slate-800 rounded-lg p-4"
+
                     >
 
                         <span className="text-slate-300">
@@ -31,9 +50,17 @@ function AIScoreCard({ data }) {
 
                         </span>
 
-                        <span className="text-cyan-400 font-bold text-lg">
+                        <span
+                            className={`font-bold text-lg ${
+                                item.score >= 0
+                                    ? "text-green-400"
+                                    : "text-red-400"
+                            }`}
+                        >
 
-                            +{item.score}
+                            {item.score > 0 ? "+" : ""}
+
+                            {item.score}
 
                         </span>
 
@@ -51,9 +78,9 @@ function AIScoreCard({ data }) {
 
                 </span>
 
-                <span className="text-2xl font-bold text-green-400">
+                <span className="text-2xl font-bold text-cyan-400">
 
-                    {data.confidence}/100
+                    {data.score ?? 0}/100
 
                 </span>
 

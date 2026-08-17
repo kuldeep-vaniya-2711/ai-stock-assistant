@@ -1,5 +1,6 @@
-import requests
 import os
+import requests
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,9 +13,9 @@ def send_telegram(message):
 
     if not BOT_TOKEN or not CHAT_ID:
 
-        print("Telegram credentials not found.")
+        print("Telegram credentials missing.")
 
-        return
+        return False
 
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
@@ -31,19 +32,23 @@ def send_telegram(message):
     try:
 
         response = requests.post(
+
             url,
+
             json=payload,
+
             timeout=10
+
         )
 
-        if response.status_code == 200:
+        response.raise_for_status()
 
-            print("✅ Telegram Notification Sent")
+        print("✅ Telegram Notification Sent")
 
-        else:
+        return True
 
-            print("Telegram Error:", response.text)
+    except requests.RequestException as e:
 
-    except Exception as e:
+        print("Telegram Error:", e)
 
-        print("Telegram Exception:", e)
+        return False

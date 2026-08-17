@@ -13,6 +13,8 @@ function AIChat() {
 
   const [input, setInput] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const bottomRef = useRef(null);
 
   const user = getCurrentUser();
@@ -31,7 +33,7 @@ function AIChat() {
 
   const sendMessage = async () => {
 
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
     const userMessage = {
 
@@ -49,13 +51,19 @@ function AIChat() {
 
     ]);
 
+    const question = input;
+
+    setInput("");
+
+    setLoading(true);
+
     try {
 
       const res = await api.post("/ai/chat", {
 
         email,
 
-        message: input
+        message: question
 
       });
 
@@ -85,7 +93,7 @@ function AIChat() {
 
           sender: "ai",
 
-          text: "Unable to reply."
+          text: "❌ Unable to reply."
 
         }
 
@@ -93,21 +101,21 @@ function AIChat() {
 
     }
 
-    setInput("");
+    setLoading(false);
 
   };
 
   return (
 
-    <div className="bg-slate-900 rounded-xl p-6 border border-slate-800">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-      <h2 className="text-2xl font-bold text-cyan-400 mb-5">
+      <h2 className="text-xl sm:text-2xl font-bold text-cyan-400 mb-5">
 
         🤖 AI Stock Assistant
 
       </h2>
 
-      <div className="h-96 overflow-y-auto space-y-4 mb-5">
+      <div className="h-[420px] overflow-y-auto space-y-4 mb-5 pr-2">
 
         {
 
@@ -117,21 +125,37 @@ function AIChat() {
 
               key={index}
 
-              className={`p-4 rounded-xl whitespace-pre-line max-w-[80%]
-
-              ${
+              className={`flex ${
 
                 msg.sender === "user"
 
-                ? "bg-cyan-600 ml-auto"
+                  ? "justify-end"
 
-                : "bg-slate-800"
+                  : "justify-start"
 
               }`}
 
             >
 
-              {msg.text}
+              <div
+
+                className={`rounded-2xl px-4 py-3 whitespace-pre-line max-w-[90%] sm:max-w-[75%]
+
+                ${
+
+                  msg.sender === "user"
+
+                    ? "bg-cyan-600 text-white"
+
+                    : "bg-slate-800 text-slate-100"
+
+                }`}
+
+              >
+
+                {msg.text}
+
+              </div>
 
             </div>
 
@@ -139,11 +163,29 @@ function AIChat() {
 
         }
 
+        {
+
+          loading && (
+
+            <div className="flex justify-start">
+
+              <div className="bg-slate-800 rounded-2xl px-4 py-3">
+
+                ⏳ AI is typing...
+
+              </div>
+
+            </div>
+
+          )
+
+        }
+
         <div ref={bottomRef}></div>
 
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
 
         <input
 
@@ -167,7 +209,7 @@ function AIChat() {
 
           placeholder="Ask AI anything..."
 
-          className="flex-1 bg-slate-800 rounded-lg px-4 py-3 outline-none"
+          className="flex-1 bg-slate-800 rounded-xl px-4 py-3 outline-none border border-slate-700 focus:border-cyan-500"
 
         />
 
@@ -175,11 +217,13 @@ function AIChat() {
 
           onClick={sendMessage}
 
-          className="bg-cyan-600 hover:bg-cyan-700 px-6 rounded-lg font-bold"
+          disabled={loading}
+
+          className="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 px-6 py-3 rounded-xl font-bold transition"
 
         >
 
-          Send
+          {loading ? "Sending..." : "Send"}
 
         </button>
 

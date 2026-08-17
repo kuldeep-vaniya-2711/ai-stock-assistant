@@ -1,4 +1,6 @@
 import yfinance as yf
+import math
+
 
 MARKET_SYMBOLS = [
     "RELIANCE.NS",
@@ -14,6 +16,21 @@ MARKET_SYMBOLS = [
 ]
 
 
+def clean_number(value):
+
+    try:
+
+        value = float(value)
+
+        if math.isnan(value) or math.isinf(value):
+            return 0
+
+        return value
+
+    except:
+        return 0
+
+
 def get_stock_change(symbol):
 
     try:
@@ -25,13 +42,16 @@ def get_stock_change(symbol):
         if len(history) < 2:
             return None
 
-        previous = float(history["Close"].iloc[-2])
+        previous = clean_number(history["Close"].iloc[-2])
 
-        current = float(history["Close"].iloc[-1])
+        current = clean_number(history["Close"].iloc[-1])
+
+        if previous <= 0:
+            return None
 
         change = ((current - previous) / previous) * 100
 
-        volume = int(history["Volume"].iloc[-1])
+        volume = int(clean_number(history["Volume"].iloc[-1]))
 
         return {
 
@@ -59,7 +79,6 @@ def get_top_gainers():
         stock = get_stock_change(symbol)
 
         if stock:
-
             data.append(stock)
 
     data.sort(
@@ -82,7 +101,6 @@ def get_top_losers():
         stock = get_stock_change(symbol)
 
         if stock:
-
             data.append(stock)
 
     data.sort(
@@ -103,7 +121,6 @@ def get_trending_stocks():
         stock = get_stock_change(symbol)
 
         if stock:
-
             data.append(stock)
 
     data.sort(
@@ -126,7 +143,6 @@ def get_most_active():
         stock = get_stock_change(symbol)
 
         if stock:
-
             data.append(stock)
 
     data.sort(

@@ -4,106 +4,160 @@ import api from "./api";
 // ----------------------------
 // Login
 // ----------------------------
-export const login = async (email, password) => {
+export async function login(
 
-    const response = await api.post(
-        "/auth/login",
-        {
-            email,
-            password
-        }
-    );
+  email,
 
-    return response.data;
+  password
 
-};
+) {
+
+  const { data } = await api.post(
+
+    "/auth/login",
+
+    {
+
+      email,
+
+      password
+
+    }
+
+  );
+
+  return data;
+
+}
 
 
 // ----------------------------
 // Send OTP
 // ----------------------------
-export const sendOTP = async (
-    name,
-    email,
-    password
-) => {
+export async function sendOTP(
 
-    const response = await api.post(
-        "/otp/send",
-        {
-            name,
-            email,
-            password
-        }
-    );
+  name,
 
-    return response.data;
+  email,
 
-};
+  password
+
+) {
+
+  const { data } = await api.post(
+
+    "/otp/send",
+
+    {
+
+      name,
+
+      email,
+
+      password
+
+    }
+
+  );
+
+  return data;
+
+}
 
 
 // ----------------------------
 // Verify OTP
 // ----------------------------
-export const verifyOTP = async (
-    email,
-    otp
-) => {
+export async function verifyOTP(
 
-    const response = await api.post(
-        "/otp/verify",
-        {
-            email,
-            otp
-        }
-    );
+  email,
 
-    return response.data;
+  otp
 
-};
+) {
+
+  const { data } = await api.post(
+
+    "/otp/verify",
+
+    {
+
+      email,
+
+      otp
+
+    }
+
+  );
+
+  return data;
+
+}
 
 
 // ----------------------------
 // Resend OTP
 // ----------------------------
-export const resendOTP = async (
-    name,
-    email,
-    password
-) => {
+export async function resendOTP(
 
-    const response = await api.post(
-        "/otp/resend",
-        {
-            name,
-            email,
-            password
-        }
-    );
+  name,
 
-    return response.data;
+  email,
 
-};
+  password
+
+) {
+
+  const { data } = await api.post(
+
+    "/otp/resend",
+
+    {
+
+      name,
+
+      email,
+
+      password
+
+    }
+
+  );
+
+  return data;
+
+}
 
 
 // ----------------------------
-// Register (Optional)
+// Direct Register (Optional)
 // ----------------------------
-export const register = async (
-    name,
-    email,
-    password
-) => {
+export async function register(
 
-    const response = await api.post(
-        "/auth/register",
-        {
-            name,
-            email,
-            password
-        }
-    );
+  name,
 
-    return response.data;
+  email,
 
-};
+  password
+
+) {
+
+  const { data } = await api.post(
+
+    "/auth/register",
+
+    {
+
+      name,
+
+      email,
+
+      password
+
+    }
+
+  );
+
+  return data;
+
+}

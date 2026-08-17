@@ -1,17 +1,53 @@
+function AnalyticsItem({
+
+  title,
+
+  value,
+
+  color = "text-white",
+
+}) {
+
+  return (
+
+    <div className="bg-slate-800 rounded-xl p-4 sm:p-5 border border-slate-700 hover:border-cyan-500 transition">
+
+      <p className="text-slate-400 text-xs sm:text-sm">
+
+        {title}
+
+      </p>
+
+      <h2 className={`mt-3 text-lg sm:text-2xl lg:text-3xl font-bold break-words ${color}`}>
+
+        {value}
+
+      </h2>
+
+    </div>
+
+  );
+
+}
+
 function AnalyticsCard({ analytics }) {
 
   if (!analytics) {
 
     return (
 
-      <div className="bg-slate-900 rounded-xl p-6 border border-slate-800">
+      <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6">
 
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">
+
           📊 Portfolio Analytics
+
         </h2>
 
         <p className="text-slate-400">
+
           Loading...
+
         </p>
 
       </div>
@@ -22,111 +58,75 @@ function AnalyticsCard({ analytics }) {
 
   return (
 
-    <div className="bg-slate-900 rounded-xl p-6 border border-slate-800">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-      <h2 className="text-xl font-bold mb-6">
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
         📊 Portfolio Analytics
 
       </h2>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
 
-        <div className="bg-slate-800 rounded-lg p-5">
+        <AnalyticsItem
 
-          <p className="text-slate-400 text-sm">
+          title="📈 Portfolio Return"
 
-            📈 Portfolio Return
+          value={`₹ ${analytics.portfolio_return}`}
 
-          </p>
+          color="text-green-400"
 
-          <h2 className="text-3xl font-bold text-green-400 mt-2">
+        />
 
-            ₹ {analytics.portfolio_return}
+        <AnalyticsItem
 
-          </h2>
+          title="🟢 Best Stock"
 
-        </div>
+          value={analytics.best_stock || "--"}
 
-        <div className="bg-slate-800 rounded-lg p-5">
+          color="text-green-400"
 
-          <p className="text-slate-400 text-sm">
+        />
 
-            🟢 Best Stock
+        <AnalyticsItem
 
-          </p>
+          title="🔴 Worst Stock"
 
-          <h2 className="text-2xl font-bold text-green-400 mt-2">
+          value={analytics.worst_stock || "--"}
 
-            {analytics.best_stock}
+          color="text-red-400"
 
-          </h2>
+        />
 
-        </div>
+        <AnalyticsItem
 
-        <div className="bg-slate-800 rounded-lg p-5">
+          title="⚠ Risk Level"
 
-          <p className="text-slate-400 text-sm">
+          value={analytics.risk || "--"}
 
-            🔴 Worst Stock
+          color="text-yellow-400"
 
-          </p>
+        />
 
-          <h2 className="text-2xl font-bold text-red-400 mt-2">
+        <AnalyticsItem
 
-            {analytics.worst_stock}
+          title="📊 Diversification"
 
-          </h2>
+          value={`${analytics.diversification}%`}
 
-        </div>
+          color="text-cyan-400"
 
-        <div className="bg-slate-800 rounded-lg p-5">
+        />
 
-          <p className="text-slate-400 text-sm">
+        <AnalyticsItem
 
-            ⚠ Risk Level
+          title="🤖 AI Recommendation"
 
-          </p>
+          value={analytics.recommendation || "No Recommendation"}
 
-          <h2 className="text-2xl font-bold text-yellow-400 mt-2">
+          color="text-white"
 
-            {analytics.risk}
-
-          </h2>
-
-        </div>
-
-        <div className="bg-slate-800 rounded-lg p-5">
-
-          <p className="text-slate-400 text-sm">
-
-            📊 Diversification
-
-          </p>
-
-          <h2 className="text-3xl font-bold text-cyan-400 mt-2">
-
-            {analytics.diversification}%
-
-          </h2>
-
-        </div>
-
-        <div className="bg-slate-800 rounded-lg p-5">
-
-          <p className="text-slate-400 text-sm">
-
-            🤖 AI Recommendation
-
-          </p>
-
-          <p className="mt-3 text-white">
-
-            {analytics.recommendation}
-
-          </p>
-
-        </div>
+        />
 
       </div>
 

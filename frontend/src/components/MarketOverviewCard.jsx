@@ -5,74 +5,121 @@ function StockTable({ title, data }) {
 
   return (
 
-    <div className="bg-slate-900 rounded-xl p-5 border border-slate-800">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-5 shadow-lg">
 
-      <h2 className="text-xl font-bold mb-5">
+      <h2 className="text-lg sm:text-xl font-bold mb-5">
 
         {title}
 
       </h2>
 
-      <table className="w-full">
+      <div className="overflow-x-auto">
 
-        <thead>
+        <table className="w-full min-w-[320px]">
 
-          <tr className="text-slate-400">
+          <thead>
 
-            <th className="text-left">Stock</th>
+            <tr className="text-slate-400 border-b border-slate-700">
 
-            <th className="text-right">Price</th>
+              <th className="text-left py-3 text-sm">
 
-            <th className="text-right">%</th>
+                Stock
 
-          </tr>
+              </th>
 
-        </thead>
+              <th className="text-right py-3 text-sm">
 
-        <tbody>
+                Price
 
-          {
+              </th>
 
-            data.map((stock, index)=>(
+              <th className="text-right py-3 text-sm">
 
-              <tr
-                key={index}
-                className="border-t border-slate-800"
-              >
+                %
 
-                <td className="py-3">
+              </th>
 
-                  {stock.symbol}
+            </tr>
 
-                </td>
+          </thead>
 
-                <td className="text-right">
+          <tbody>
 
-                  ₹ {stock.price}
+            {
 
-                </td>
+              data.length === 0 ? (
 
-                <td
-                  className={`text-right ${
-                    stock.change_percent >=0
-                    ? "text-green-400"
-                    : "text-red-400"
-                  }`}
-                >
+                <tr>
 
-                  {stock.change_percent}%
+                  <td
 
-                </td>
+                    colSpan={3}
 
-              </tr>
+                    className="text-center py-8 text-slate-500"
 
-            ))
+                  >
 
-          }
+                    No Data
 
-        </tbody>
+                  </td>
 
-      </table>
+                </tr>
+
+              ) : (
+
+                data.map((stock, index) => (
+
+                  <tr
+
+                    key={index}
+
+                    className="border-b border-slate-800 hover:bg-slate-800 transition"
+
+                  >
+
+                    <td className="py-3 font-medium whitespace-nowrap">
+
+                      {stock.symbol}
+
+                    </td>
+
+                    <td className="text-right whitespace-nowrap">
+
+                      ₹ {stock.price}
+
+                    </td>
+
+                    <td
+
+                      className={`text-right font-semibold whitespace-nowrap ${
+
+                        stock.change_percent >= 0
+
+                          ? "text-green-400"
+
+                          : "text-red-400"
+
+                      }`}
+
+                    >
+
+                      {stock.change_percent}%
+
+                    </td>
+
+                  </tr>
+
+                ))
+
+              )
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
 
@@ -80,65 +127,67 @@ function StockTable({ title, data }) {
 
 }
 
-export default function MarketOverviewCard(){
+export default function MarketOverviewCard() {
 
-  const [gainers,setGainers]=useState([]);
-  const [losers,setLosers]=useState([]);
-  const [trending,setTrending]=useState([]);
-  const [active,setActive]=useState([]);
+  const [gainers, setGainers] = useState([]);
 
-  useEffect(()=>{
+  const [losers, setLosers] = useState([]);
 
-    loadData();
+  const [trending, setTrending] = useState([]);
 
-  },[]);
+  const [active, setActive] = useState([]);
 
-  const loadData=async()=>{
+  useEffect(() => {
 
-    try{
+    async function fetchData() {
 
-      const [
+      try {
 
-        g,
-        l,
-        t,
-        a
+        const [g, l, t, a] = await Promise.all([
 
-      ]=await Promise.all([
+          api.get("/market/top-gainers"),
 
-        api.get("/market/top-gainers"),
-        api.get("/market/top-losers"),
-        api.get("/market/trending"),
-        api.get("/market/most-active")
+          api.get("/market/top-losers"),
 
-      ]);
+          api.get("/market/trending"),
 
-      setGainers(g.data);
-      setLosers(l.data);
-      setTrending(t.data);
-      setActive(a.data);
+          api.get("/market/most-active"),
+
+        ]);
+
+        setGainers(g.data);
+
+        setLosers(l.data);
+
+        setTrending(t.data);
+
+        setActive(a.data);
+
+      }
+
+      catch (err) {
+
+        console.log(err);
+
+      }
 
     }
 
-    catch(err){
+    Promise.resolve().then(fetchData);
 
-      console.log(err);
+  }, []);
 
-    }
-
-  }
-
-  return(
+  return (
 
     <div className="space-y-6">
 
-      <h1 className="text-3xl font-bold">
+      <h1 className="text-2xl sm:text-3xl font-bold">
 
         🌍 Live Market Overview
 
       </h1>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         <StockTable
 

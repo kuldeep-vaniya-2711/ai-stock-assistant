@@ -21,41 +21,37 @@ function StatCard({
 
   return (
 
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-cyan-500/20 hover:-translate-y-1 transition-all duration-300">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-lg hover:border-cyan-500 hover:shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-1">
 
-      <div className="flex justify-between items-start">
+      <div className="flex items-start justify-between gap-4">
 
-        <div>
+        <div className="flex-1 min-w-0">
 
-          <p className="text-slate-400 text-sm">
+          <p className="text-slate-400 text-xs sm:text-sm">
 
             {title}
 
           </p>
 
-          <h2 className={`text-3xl font-bold mt-3 ${color}`}>
+          <h2 className={`mt-2 text-xl sm:text-2xl lg:text-3xl font-bold break-words ${color}`}>
 
             {value}
 
           </h2>
 
-          {
+          {subtitle && (
 
-            subtitle && (
+            <p className="mt-2 text-xs sm:text-sm text-slate-500">
 
-              <p className="text-slate-500 mt-2 text-sm">
+              {subtitle}
 
-                {subtitle}
+            </p>
 
-              </p>
-
-            )
-
-          }
+          )}
 
         </div>
 
-        <div className="bg-slate-800 rounded-xl p-3">
+        <div className="bg-slate-800 rounded-xl p-3 shrink-0">
 
           {icon}
 
@@ -77,7 +73,7 @@ export default function DashboardStats({
 
 }) {
 
-  const wallet = profile?.wallet || 0;
+  const wallet = Number(profile?.wallet || 0);
 
   const level = profile?.level || "Beginner";
 
@@ -89,11 +85,11 @@ export default function DashboardStats({
 
   let currentValue = 0;
 
-  portfolio?.forEach(stock => {
+  portfolio?.forEach((stock) => {
 
-    investment += stock.investment || 0;
+    investment += Number(stock.investment || 0);
 
-    currentValue += stock.current_value || 0;
+    currentValue += Number(stock.current_value || 0);
 
   });
 
@@ -101,7 +97,7 @@ export default function DashboardStats({
 
   return (
 
-    <div className="grid lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
 
       <StatCard
 
@@ -117,7 +113,7 @@ export default function DashboardStats({
 
           <Wallet
 
-            size={30}
+            size={28}
 
             className="text-green-400"
 
@@ -141,7 +137,7 @@ export default function DashboardStats({
 
           <Briefcase
 
-            size={30}
+            size={28}
 
             className="text-cyan-400"
 
@@ -181,7 +177,7 @@ export default function DashboardStats({
 
           <TrendingUp
 
-            size={30}
+            size={28}
 
             className={
 
@@ -213,7 +209,7 @@ export default function DashboardStats({
 
           <Award
 
-            size={30}
+            size={28}
 
             className="text-yellow-400"
 

@@ -7,167 +7,101 @@ import {
   getMostActiveStocks,
 } from "../services/marketOverview";
 
-function MarketOverview() {
+function MarketCard({
 
-  const [gainers, setGainers] = useState([]);
-  const [losers, setLosers] = useState([]);
-  const [trending, setTrending] = useState([]);
-  const [active, setActive] = useState([]);
+  title,
 
-  const [loading, setLoading] = useState(true);
+  color,
 
-  useEffect(() => {
+  data,
 
-    let isMounted = true;
+  loading,
 
-    const loadMarketData = async () => {
-      try {
-        setLoading(true);
-
-        const [
-          gainersData,
-          losersData,
-          trendingData,
-          activeData,
-        ] = await Promise.all([
-          getTopGainers(),
-          getTopLosers(),
-          getTrendingStocks(),
-          getMostActiveStocks(),
-        ]);
-
-        if (!isMounted) return;
-
-        setGainers(gainersData);
-        setLosers(losersData);
-        setTrending(trendingData);
-        setActive(activeData);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadMarketData();
-
-    return () => {
-      isMounted = false;
-    };
-
-  }, []);
-
-  const renderList = (list, color) => {
-
-    if (loading) {
-
-      return (
-        <p className="text-slate-400">
-          Loading...
-        </p>
-      );
-
-    }
-
-    if (!list || list.length === 0) {
-
-      return (
-        <p className="text-slate-400">
-          No Data Available
-        </p>
-      );
-
-    }
-
-    return list.map((item, index) => (
-
-      <div
-        key={index}
-        className="flex justify-between items-center py-2 border-b border-slate-700 last:border-none"
-      >
-
-        <div>
-
-          <p className="font-semibold">
-            {item.symbol}
-          </p>
-
-          <p className="text-xs text-slate-400">
-            ₹{item.price}
-          </p>
-
-        </div>
-
-        <span
-          className={`font-bold ${color}`}
-        >
-          {item.change > 0 ? "+" : ""}
-          {item.change}%
-        </span>
-
-      </div>
-
-    ));
-
-  };
+}) {
 
   return (
 
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg">
 
-      <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
+      <h2 className={`text-xl font-bold mb-5 ${color}`}>
 
-        <h2 className="text-xl font-bold text-green-400 mb-4">
-          📈 Top Gainers
-        </h2>
+        {title}
 
-        {renderList(
-          gainers,
-          "text-green-400"
-        )}
+      </h2>
 
-      </div>
+      {
 
-      <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
+        loading ? (
 
-        <h2 className="text-xl font-bold text-red-400 mb-4">
-          📉 Top Losers
-        </h2>
+          <p className="text-slate-400">
 
-        {renderList(
-          losers,
-          "text-red-400"
-        )}
+            Loading...
 
-      </div>
+          </p>
 
-      <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
+        ) : data.length === 0 ? (
 
-        <h2 className="text-xl font-bold text-orange-400 mb-4">
-          🔥 Trending Stocks
-        </h2>
+          <p className="text-slate-500">
 
-        {renderList(
-          trending,
-          "text-orange-400"
-        )}
+            No Data Available
 
-      </div>
+          </p>
 
-      <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
+        ) : (
 
-        <h2 className="text-xl font-bold text-yellow-400 mb-4">
-          ⭐ Most Active Stocks
-        </h2>
+          <div className="space-y-3">
 
-        {renderList(
-          active,
-          "text-yellow-400"
-        )}
+            {
 
-      </div>
+              data.map((item, index) => (
+
+                <div
+
+                  key={index}
+
+                  className="flex justify-between items-center bg-slate-800 rounded-xl px-4 py-3 hover:bg-slate-700 transition"
+
+                >
+
+                  <div>
+
+                    <h3 className="font-bold">
+
+                      {item.symbol}
+
+                    </h3>
+
+                    <p className="text-xs text-slate-400">
+
+                      ₹{item.price}
+
+                    </p>
+
+                  </div>
+
+                  <span
+
+                    className={`font-bold ${color}`}
+
+                  >
+
+                    {item.change > 0 ? "+" : ""}
+
+                    {item.change}%
+
+                  </span>
+
+                </div>
+
+              ))
+
+            }
+
+          </div>
+
+        )
+
+      }
 
     </div>
 
@@ -175,4 +109,128 @@ function MarketOverview() {
 
 }
 
-export default MarketOverview;
+export default function MarketOverview() {
+
+  const [gainers, setGainers] = useState([]);
+
+  const [losers, setLosers] = useState([]);
+
+  const [trending, setTrending] = useState([]);
+
+  const [active, setActive] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    async function load() {
+
+      try {
+
+        const [
+
+          g,
+
+          l,
+
+          t,
+
+          a,
+
+        ] = await Promise.all([
+
+          getTopGainers(),
+
+          getTopLosers(),
+
+          getTrendingStocks(),
+
+          getMostActiveStocks(),
+
+        ]);
+
+        setGainers(g);
+
+        setLosers(l);
+
+        setTrending(t);
+
+        setActive(a);
+
+      }
+
+      catch (err) {
+
+        console.log(err);
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    }
+
+    load();
+
+  }, []);
+
+  return (
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <MarketCard
+
+        title="🚀 Top Gainers"
+
+        color="text-green-400"
+
+        data={gainers}
+
+        loading={loading}
+
+      />
+
+      <MarketCard
+
+        title="📉 Top Losers"
+
+        color="text-red-400"
+
+        data={losers}
+
+        loading={loading}
+
+      />
+
+      <MarketCard
+
+        title="🔥 Trending Stocks"
+
+        color="text-orange-400"
+
+        data={trending}
+
+        loading={loading}
+
+      />
+
+      <MarketCard
+
+        title="⭐ Most Active"
+
+        color="text-yellow-400"
+
+        data={active}
+
+        loading={loading}
+
+      />
+
+    </div>
+
+  );
+
+}

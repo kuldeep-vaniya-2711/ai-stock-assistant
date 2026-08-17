@@ -17,21 +17,27 @@ def sector_allocation(email: str):
         )
     )
 
-    result = {}
+    allocation = {}
 
     for stock in stocks:
 
-        # Agar sector save nahi hai to Other
         sector = stock.get("sector", "Other")
 
-        value = stock.get("buy_price", 0) * stock.get("quantity", 0)
+        quantity = stock.get("quantity", 0)
 
-        result[sector] = result.get(sector, 0) + value
+        buy_price = stock.get("buy_price", 0)
+
+        value = round(quantity * buy_price, 2)
+
+        allocation[sector] = allocation.get(sector, 0) + value
 
     return [
+
         {
-            "name": key,
-            "value": value
+            "name": sector,
+            "value": round(value, 2)
         }
-        for key, value in result.items()
+
+        for sector, value in allocation.items()
+
     ]

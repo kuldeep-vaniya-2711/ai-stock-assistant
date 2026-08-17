@@ -22,184 +22,156 @@ import LeaderboardCard from "../components/LeaderboardCard";
 import PortfolioAllocationChart from "../components/PortfolioAllocationChart";
 import AIRecommendationCard from "../components/AIRecommendationCard";
 
-
-
-
-
 function DashboardHome() {
+  const {
+    profile,
+    portfolio,
+    analysis,
+    analytics,
+  } = useDashboardContext();
 
-    const {
+  return (
+    <section className="space-y-6">
 
-        profile,
+      {/* ================= HERO ================= */}
 
-        portfolio,
+      <div className="bg-gradient-to-r from-indigo-700 via-slate-900 to-cyan-700 rounded-2xl p-5 sm:p-8 shadow-xl">
 
-        analysis,
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
 
-        analytics
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white">
+              👋 Welcome Back
+            </h1>
 
-    } = useDashboardContext();
+            <p className="text-slate-200 mt-3 text-base sm:text-lg">
+              Your AI Powered Stock Dashboard
+            </p>
 
-    return (
+            <p className="text-slate-300 mt-2 text-sm sm:text-base">
+              Monitor your investments, analyse portfolio and discover new
+              opportunities.
+            </p>
+          </div>
 
-        <section className="space-y-8">
+          <div className="w-full lg:w-auto">
+            <DownloadReportButton />
+          </div>
 
-            {/* ================= HERO SECTION ================= */}
+        </div>
 
-            <div className="bg-gradient-to-r from-indigo-700 via-slate-900 to-cyan-700 rounded-2xl p-8 shadow-xl">
+      </div>
 
-                <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
+      {/* ================= QUICK STATS ================= */}
 
-                    <div>
+      <QuickStats />
 
-                        <h1 className="text-4xl font-bold text-white">
+      {/* ================= WALLET ================= */}
 
-                            👋 Welcome Back
+      <WalletCard user={profile} />
 
-                        </h1>
+      {/* ================= LEVEL ================= */}
 
-                        <p className="text-slate-200 mt-3 text-lg">
+      <LevelCard profile={profile} />
 
-                            Your AI Powered Stock Dashboard
+      {/* ================= DASHBOARD SUMMARY ================= */}
 
-                        </p>
+      <DashboardSummary />
 
-                        <p className="text-slate-300 mt-2">
+      {/* ================= DASHBOARD STATS ================= */}
 
-                            Monitor your investments, analyse portfolio and discover new opportunities.
+      <DashboardStats
+        profile={profile}
+        portfolio={portfolio}
+        analysis={analysis}
+      />
 
-                        </p>
+      {/* ================= PORTFOLIO ================= */}
 
-                    </div>
+      <PortfolioOverview
+        portfolio={portfolio}
+      />
 
-                    <DownloadReportButton />
+      {/* ================= ANALYTICS ================= */}
 
-                </div>
+      <div className="grid xl:grid-cols-2 gap-6">
 
-            </div>
+        <AnalyticsCard
+          analytics={analytics}
+        />
 
-            {/* ================= QUICK STATS ================= */}
+        <PortfolioHealthCard
+          analytics={analytics}
+        />
 
-            <QuickStats />
+      </div>
 
-            {/* ================= WALLET ================= */}
+      {/* ================= PORTFOLIO SUMMARY ================= */}
 
-            <WalletCard user={profile} />
+      <PortfolioSummary
+        profile={profile}
+        portfolio={portfolio}
+      />
 
-            {/* ================= LEVEL ================= */}
+      {/* ================= PORTFOLIO CHARTS ================= */}
 
-            <LevelCard profile={profile} />
+      <div className="grid xl:grid-cols-2 gap-6">
 
-            {/* ================= SUMMARY ================= */}
+        <PortfolioGrowthChart />
 
-            <DashboardSummary />
+        <PortfolioAllocationChart />
 
-            {/* ================= STATS ================= */}
+      </div>
 
-            <DashboardStats
+      {/* ================= AI RECOMMENDATION ================= */}
 
-                profile={profile}
+      <AIRecommendationCard />
 
-                portfolio={portfolio}
+      {/* ================= ACHIEVEMENTS ================= */}
 
-                analysis={analysis}
+      <AchievementCard
+        profile={profile}
+        portfolio={portfolio}
+      />
 
-            />
+      {/* ================= STREAK & GOALS ================= */}
 
-            {/* ================= PORTFOLIO ================= */}
+      <div className="grid xl:grid-cols-2 gap-6">
 
-            <PortfolioOverview
+        <StreakCard
+          profile={profile}
+        />
 
-                portfolio={portfolio}
+        <InvestmentGoalCard
+          portfolio={portfolio}
+        />
 
-            />
+      </div>
 
-            {/* ================= ANALYTICS ================= */}
+      {/* ================= MARKET OVERVIEW ================= */}
 
-            <AnalyticsCard
+      <MarketOverviewCard />
 
-                analytics={analytics}
+      {/* ================= MARKET MOVERS & NEWS ================= */}
 
-            />
+      <div className="grid xl:grid-cols-2 gap-6">
 
-            <PortfolioHealthCard
+        <TopMoversCard />
 
-                analytics={analytics}
+        <MarketNewsCard />
 
-            />
+      </div>
 
-            {/* ================= PORTFOLIO SUMMARY ================= */}
+      {/* ================= STOCK SCREENER ================= */}
 
-            <PortfolioSummary
+      <StockScreener />
 
-                profile={profile}
+      {/* ================= LEADERBOARD ================= */}
 
-                portfolio={portfolio}
+      <LeaderboardCard />
 
-            />
-
-            {/* ================= GROWTH CHART ================= */}
-
-            <PortfolioGrowthChart />
-
-
-<PortfolioAllocationChart />
-
-<AIRecommendationCard />
-
-
-            {/* ================= ACHIEVEMENTS ================= */}
-
-            <AchievementCard
-
-                profile={profile}
-
-                portfolio={portfolio}
-
-            />
-
-            {/* ================= STREAK + GOAL ================= */}
-
-            <div className="grid xl:grid-cols-2 gap-6">
-
-                <StreakCard
-
-                    profile={profile}
-
-                />
-
-                <InvestmentGoalCard
-
-                    portfolio={portfolio}
-
-                />
-
-            </div>
-
-            {/* ================= MARKET ================= */}
-
-            <MarketOverviewCard />
-
-            <div className="grid xl:grid-cols-2 gap-6">
-
-                <TopMoversCard />
-
-                <MarketNewsCard />
-
-            </div>
-
-            {/* ================= STOCK SCREENER ================= */}
-
-            <StockScreener />
-
-            {/* ================= LEADERBOARD ================= */}
-
-            <LeaderboardCard />
-
-        </section>
-
-    );
-
+    </section>
+  );
 }
 
 export default DashboardHome;

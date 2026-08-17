@@ -8,80 +8,72 @@ def get_ai_recommendation(email):
     if not portfolio:
 
         return {
-
             "score": 0,
-
             "title": "Start Investing",
-
             "status": "info",
-
             "best_stock": "-",
-
             "worst_stock": "-",
-
             "risk": "Low",
-
             "diversification": "Poor",
-
             "profit": 0,
-
             "market_trend": "Neutral",
-
             "buy_score": 0,
-
             "confidence": 0,
-
             "next_week": "Neutral",
-
             "expected_growth": 0,
-
             "suggestions": [
-
                 "Buy your first stock.",
-
                 "Create a diversified portfolio.",
-
                 "Start SIP investing.",
-
                 "Track your watchlist.",
-
                 "Avoid emotional investing."
-
             ]
-
         }
 
-    total_profit = sum(
-
-        stock.get("profit", 0)
-
+    investment = sum(
+        stock["investment"]
         for stock in portfolio
+    )
 
+    total_profit = sum(
+        stock["profit"]
+        for stock in portfolio
     )
 
     best = max(
-
         portfolio,
-
-        key=lambda x: x.get("profit", 0)
-
+        key=lambda x: x["profit"]
     )
 
     worst = min(
-
         portfolio,
-
-        key=lambda x: x.get("profit", 0)
-
+        key=lambda x: x["profit"]
     )
 
-    diversification = min(
+    # ---------------------------------------
+    # Diversification
+    # ---------------------------------------
 
-        len(portfolio) * 10,
+    weights = []
 
-        100
+    for stock in portfolio:
 
+        weight = (
+            stock["investment"] /
+            investment
+        ) * 100
+
+        weights.append(weight)
+
+    max_weight = max(weights)
+
+    diversification = round(
+        100 - max_weight,
+        2
     )
+
+    if diversification < 30:
+        diversification = 30
 
     if diversification >= 80:
 
@@ -99,47 +91,70 @@ def get_ai_recommendation(email):
 
         diversification_text = "Poor"
 
-    score = 50
+    # ---------------------------------------
+    # Risk
+    # ---------------------------------------
 
-    score += diversification // 4
+    if max_weight >= 60:
+
+        risk = "High"
+
+    elif max_weight >= 35:
+
+        risk = "Medium"
+
+    else:
+
+        risk = "Low"
+
+    # ---------------------------------------
+    # Portfolio Score
+    # ---------------------------------------
+
+    score = 40
+
+    score += diversification / 4
 
     if total_profit > 0:
-
-        score += 20
+        score += 15
 
     if total_profit > 5000:
-
         score += 10
 
-    if worst.get("profit_percent", 0) < -10:
+    if total_profit > 10000:
+        score += 10
 
-        score -= 15
+    if worst["profit_percent"] < -15:
+        score -= 20
 
-    score = max(0, min(100, score))
+    score = round(
+        max(
+            0,
+            min(score, 100)
+        )
+    )
 
-    if score >= 85:
+    # ---------------------------------------
+    # Status
+    # ---------------------------------------
+
+    if score >= 90:
 
         title = "Excellent Portfolio"
 
         status = "success"
 
-        risk = "Low"
-
-    elif score >= 65:
+    elif score >= 75:
 
         title = "Healthy Portfolio"
 
         status = "success"
 
-        risk = "Medium"
-
-    elif score >= 45:
+    elif score >= 55:
 
         title = "Portfolio Stable"
 
         status = "warning"
-
-        risk = "Medium"
 
     else:
 
@@ -147,102 +162,129 @@ def get_ai_recommendation(email):
 
         status = "danger"
 
-        risk = "High"
+    # ---------------------------------------
+    # Market Trend
+    # ---------------------------------------
+
+    positive = len(
+        [
+            s
+            for s in portfolio
+            if s["profit"] > 0
+        ]
+    )
+
+    negative = len(portfolio) - positive
+
+    if positive > negative:
+
+        market_trend = "Bullish"
+
+    elif positive == negative:
+
+        market_trend = "Neutral"
+
+    else:
+
+        market_trend = "Bearish"
+
+    # ---------------------------------------
+    # Buy Score
+    # ---------------------------------------
+
+    buy_score = round(
+
+        (score * 0.6)
+
+        +
+
+        (diversification * 0.4)
+
+    )
+
+    buy_score = min(100, buy_score)
+
+    # ---------------------------------------
+    # Confidence
+    # ---------------------------------------
+
+    confidence = round(
+
+        60 +
+
+        (buy_score / 2)
+
+    )
+
+    confidence = min(98, confidence)
+
+    # ---------------------------------------
+    # Prediction
+    # ---------------------------------------
+
+    if total_profit > 0 and risk == "Low":
+
+        next_week = "Bullish"
+
+    elif risk == "High":
+
+        next_week = "Volatile"
+
+    else:
+
+        next_week = "Neutral"
+
+    expected_growth = round(
+
+        max(
+            1,
+            buy_score / 18
+        ),
+
+        1
+
+    )
+
+    # ---------------------------------------
+    # Suggestions
+    # ---------------------------------------
 
     suggestions = []
 
     if diversification < 60:
 
         suggestions.append(
-
-            "Diversify across more sectors."
-
+            "Diversify into IT, Pharma and FMCG sectors."
         )
 
-    if worst.get("profit_percent", 0) < -8:
+    if risk == "High":
 
         suggestions.append(
-
-            f"Review {worst['symbol']} position."
-
+            "Reduce concentration in one stock."
         )
 
-    if best.get("profit_percent", 0) > 20:
+    if total_profit > 10000:
 
         suggestions.append(
-
-            f"Book partial profit in {best['symbol']}."
-
+            "Book partial profits and rebalance."
         )
 
-    if total_profit < 0:
+    if worst["profit_percent"] < -10:
 
         suggestions.append(
-
-            "Avoid averaging losing stocks."
-
+            f"Review {worst['symbol']} fundamentals."
         )
 
     suggestions.append(
-
-        "Continue monthly SIP."
-
+        "Continue monthly SIP investing."
     )
 
     suggestions.append(
-
-        "Keep 10% cash for opportunities."
-
+        "Keep 10% cash for market opportunities."
     )
 
     suggestions.append(
-
-        "Review portfolio weekly."
-
-    )
-
-    market_trend = (
-
-        "Bullish"
-
-        if total_profit >= 0
-
-        else "Bearish"
-
-    )
-
-    buy_score = min(
-
-        100,
-
-        score + 5
-
-    )
-
-    confidence = min(
-
-        98,
-
-        score + 8
-
-    )
-
-    next_week = (
-
-        "Positive"
-
-        if score >= 70
-
-        else "Neutral"
-
-    )
-
-    expected_growth = round(
-
-        max(2, score / 20),
-
-        1
-
+        "Review portfolio every weekend."
     )
 
     return {

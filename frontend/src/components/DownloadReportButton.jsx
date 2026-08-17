@@ -1,35 +1,43 @@
 import { getCurrentUser } from "../utils/auth";
 
-export default function DownloadReportButton(){
+export default function DownloadReportButton() {
 
-    const user=getCurrentUser();
+  const user = getCurrentUser();
 
-    const download=()=>{
+  const download = () => {
 
-        window.open(
+    if (!user?.email) {
 
-            `http://127.0.0.1:8000/report/${user.email}`,
+      alert("Please login first.");
 
-            "_blank"
-
-        );
+      return;
 
     }
 
-    return(
+    window.open(
 
-        <button
+      `http://127.0.0.1:8000/report/${user.email}`,
 
-            onClick={download}
+      "_blank"
 
-            className="bg-cyan-500 hover:bg-cyan-600 px-6 py-3 rounded-lg font-bold"
+    );
 
-        >
+  };
 
-            📄 Download Portfolio Report
+  return (
 
-        </button>
+    <button
 
-    )
+      onClick={download}
+
+      className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-600 px-5 sm:px-6 py-3 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 shadow-lg"
+
+    >
+
+      📄 Download Portfolio Report
+
+    </button>
+
+  );
 
 }

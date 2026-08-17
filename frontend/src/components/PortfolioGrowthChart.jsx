@@ -1,24 +1,24 @@
 import {
 
-    Line
+  Line
 
 } from "react-chartjs-2";
 
 import {
 
-    Chart as ChartJS,
+  Chart as ChartJS,
 
-    CategoryScale,
+  CategoryScale,
 
-    LinearScale,
+  LinearScale,
 
-    PointElement,
+  PointElement,
 
-    LineElement,
+  LineElement,
 
-    Tooltip,
+  Tooltip,
 
-    Legend
+  Legend
 
 } from "chart.js";
 
@@ -26,98 +26,162 @@ import { useDashboardContext } from "../context/DashboardContext";
 
 ChartJS.register(
 
-    CategoryScale,
+  CategoryScale,
 
-    LinearScale,
+  LinearScale,
 
-    PointElement,
+  PointElement,
 
-    LineElement,
+  LineElement,
 
-    Tooltip,
+  Tooltip,
 
-    Legend
+  Legend
 
 );
 
 export default function PortfolioGrowthChart() {
 
-    const {
+  const { portfolio } = useDashboardContext();
 
-        portfolio
+  const labels = portfolio.map(
 
-    } = useDashboardContext();
+    (stock) => stock.symbol
 
-    const labels = portfolio.map(
+  );
 
-        stock => stock.symbol
+  const investment = portfolio.map(
 
-    );
+    (stock) => stock.investment
 
-    const investment = portfolio.map(
+  );
 
-        stock => stock.investment
+  const current = portfolio.map(
 
-    );
+    (stock) => stock.current_value
 
-    const current = portfolio.map(
+  );
 
-        stock => stock.current_value
+  const data = {
 
-    );
+    labels,
 
-    const data = {
+    datasets: [
 
-        labels,
+      {
 
-        datasets: [
+        label: "Investment",
 
-            {
+        data: investment,
 
-                label: "Investment",
+        borderColor: "#3B82F6",
 
-                data: investment,
+        backgroundColor: "#3B82F6",
 
-                borderColor: "#3B82F6",
+        tension: 0.4,
 
-                backgroundColor: "#3B82F6",
+      },
 
-                tension: 0.4
+      {
 
-            },
+        label: "Current Value",
 
-            {
+        data: current,
 
-                label: "Current Value",
+        borderColor: "#22C55E",
 
-                data: current,
+        backgroundColor: "#22C55E",
 
-                borderColor: "#22C55E",
+        tension: 0.4,
 
-                backgroundColor: "#22C55E",
+      },
 
-                tension: 0.4
+    ],
 
-            }
+  };
 
-        ]
+  const options = {
 
-    };
+    responsive: true,
 
-    return (
+    maintainAspectRatio: false,
 
-        <div className="bg-slate-900 rounded-xl p-6">
+    plugins: {
 
-            <h2 className="text-2xl font-bold mb-5">
+      legend: {
 
-                📈 Portfolio Growth
+        labels: {
 
-            </h2>
+          color: "#ffffff",
 
-            <Line data={data} />
+        },
 
-        </div>
+      },
 
-    );
+    },
+
+    scales: {
+
+      x: {
+
+        ticks: {
+
+          color: "#CBD5E1",
+
+        },
+
+        grid: {
+
+          color: "#334155",
+
+        },
+
+      },
+
+      y: {
+
+        ticks: {
+
+          color: "#CBD5E1",
+
+        },
+
+        grid: {
+
+          color: "#334155",
+
+        },
+
+      },
+
+    },
+
+  };
+
+  return (
+
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
+
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
+
+        📈 Portfolio Growth
+
+      </h2>
+
+      <div className="relative h-72 sm:h-96">
+
+        <Line
+
+          data={data}
+
+          options={options}
+
+        />
+
+      </div>
+
+    </div>
+
+  );
 
 }

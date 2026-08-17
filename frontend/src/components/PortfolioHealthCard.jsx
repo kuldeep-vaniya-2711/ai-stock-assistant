@@ -1,19 +1,35 @@
 import { useDashboardContext } from "../context/DashboardContext";
 
-function Card({ title, value, color }) {
-  return (
-    <div className="bg-slate-800 rounded-xl p-5 border border-slate-700">
+function Card({
 
-      <p className="text-slate-400 text-sm">
+  title,
+
+  value,
+
+  color,
+
+}) {
+
+  return (
+
+    <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 sm:p-5 hover:border-cyan-500 transition">
+
+      <p className="text-slate-400 text-xs sm:text-sm">
+
         {title}
+
       </p>
 
-      <h2 className={`text-2xl font-bold mt-2 ${color}`}>
+      <h2 className={`mt-3 text-xl sm:text-2xl lg:text-3xl font-bold break-words ${color}`}>
+
         {value}
+
       </h2>
 
     </div>
+
   );
+
 }
 
 export default function PortfolioHealthCard() {
@@ -24,7 +40,7 @@ export default function PortfolioHealthCard() {
 
     return (
 
-      <div className="bg-slate-900 rounded-xl p-6">
+      <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 text-center">
 
         Loading Portfolio Health...
 
@@ -36,15 +52,15 @@ export default function PortfolioHealthCard() {
 
   return (
 
-    <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-lg">
 
-      <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
         ❤️ Portfolio Health
 
       </h2>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
 
         <Card
 
@@ -60,7 +76,7 @@ export default function PortfolioHealthCard() {
 
           title="Risk"
 
-          value={analytics.risk}
+          value={analytics.risk || "--"}
 
           color="text-red-400"
 
@@ -80,7 +96,7 @@ export default function PortfolioHealthCard() {
 
           title="Recommendation"
 
-          value={analytics.recommendation}
+          value={analytics.recommendation || "Hold"}
 
           color="text-yellow-400"
 

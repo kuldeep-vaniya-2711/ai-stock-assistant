@@ -2,59 +2,59 @@ export default function PortfolioOverview({ portfolio }) {
 
     return (
 
-        <div className="bg-slate-900 rounded-xl p-6 shadow-lg">
+        <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 shadow-lg border border-slate-800">
 
-            <h2 className="text-2xl font-bold mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6">
 
                 📈 Portfolio Overview
 
             </h2>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl">
 
-                <table className="w-full table-fixed">
+                <table className="min-w-[900px] w-full">
 
                     <thead>
 
                         <tr className="border-b border-slate-700 text-slate-300">
 
-                            <th className="w-[18%] text-left py-3">
+                            <th className="text-left py-4 px-3">
 
                                 Stock
 
                             </th>
 
-                            <th className="w-[8%] text-center py-3">
+                            <th className="text-center py-4 px-3">
 
                                 Qty
 
                             </th>
 
-                            <th className="w-[12%] text-center py-3">
+                            <th className="text-center py-4 px-3">
 
                                 Buy
 
                             </th>
 
-                            <th className="w-[12%] text-center py-3">
+                            <th className="text-center py-4 px-3">
 
                                 Current
 
                             </th>
 
-                            <th className="w-[15%] text-center py-3">
+                            <th className="text-center py-4 px-3">
 
                                 Investment
 
                             </th>
 
-                            <th className="w-[15%] text-center py-3">
+                            <th className="text-center py-4 px-3">
 
                                 Current Value
 
                             </th>
 
-                            <th className="w-[20%] text-center py-3">
+                            <th className="text-center py-4 px-3">
 
                                 Profit
 
@@ -68,15 +68,16 @@ export default function PortfolioOverview({ portfolio }) {
 
                         {
 
-                            portfolio.length === 0 ?
-
-                            (
+                            portfolio?.length === 0 ? (
 
                                 <tr>
 
                                     <td
+
                                         colSpan="7"
-                                        className="text-center py-8 text-slate-400"
+
+                                        className="text-center py-12 text-slate-400"
+
                                     >
 
                                         No Stocks Found
@@ -85,11 +86,7 @@ export default function PortfolioOverview({ portfolio }) {
 
                                 </tr>
 
-                            )
-
-                            :
-
-                            (
+                            ) : (
 
                                 portfolio.map((stock) => (
 
@@ -97,73 +94,81 @@ export default function PortfolioOverview({ portfolio }) {
 
                                         key={stock.symbol}
 
-                                        className="border-b border-slate-800 hover:bg-slate-800 transition"
+                                        className="border-b border-slate-800 hover:bg-slate-800/60 transition"
 
                                     >
 
-                                        <td className="py-4 font-semibold">
+                                        <td className="py-4 px-3 font-semibold whitespace-nowrap">
 
                                             {stock.symbol}
 
                                         </td>
 
-                                        <td className="text-center">
+                                        <td className="text-center px-3">
 
                                             {stock.quantity}
 
                                         </td>
 
-                                        <td className="text-center">
+                                        <td className="text-center px-3 whitespace-nowrap">
 
-                                            ₹{stock.buy_price}
-
-                                        </td>
-
-                                        <td className="text-center">
-
-                                            ₹{stock.current_price}
+                                            ₹{Number(stock.buy_price).toFixed(2)}
 
                                         </td>
 
-                                        <td className="text-center">
+                                        <td className="text-center px-3 whitespace-nowrap">
 
-                                            ₹{stock.investment}
-
-                                        </td>
-
-                                        <td className="text-center text-cyan-400 font-semibold">
-
-                                            ₹{stock.current_value}
+                                            ₹{Number(stock.current_price).toFixed(2)}
 
                                         </td>
 
-                                        <td className="text-center">
+                                        <td className="text-center px-3 whitespace-nowrap">
+
+                                            ₹{Number(stock.investment).toFixed(2)}
+
+                                        </td>
+
+                                        <td className="text-center px-3 whitespace-nowrap font-semibold text-cyan-400">
+
+                                            ₹{Number(stock.current_value).toFixed(2)}
+
+                                        </td>
+
+                                        <td className="text-center px-3 whitespace-nowrap">
 
                                             <div
 
                                                 className={`font-bold ${
+
                                                     stock.profit >= 0
-                                                    ? "text-green-400"
-                                                    : "text-red-400"
+
+                                                        ? "text-green-400"
+
+                                                        : "text-red-400"
+
                                                 }`}
 
                                             >
 
-                                                ₹{stock.profit}
+                                                ₹{Number(stock.profit).toFixed(2)}
 
                                             </div>
 
                                             <div
 
                                                 className={`text-sm ${
+
                                                     stock.profit_percent >= 0
-                                                    ? "text-green-300"
-                                                    : "text-red-300"
+
+                                                        ? "text-green-300"
+
+                                                        : "text-red-300"
+
                                                 }`}
 
                                             >
 
-                                                ({stock.profit_percent}%)
+                                                ({Number(stock.profit_percent).toFixed(2)}%)
 
                                             </div>
 
