@@ -120,15 +120,23 @@ app = FastAPI(
 # CORS
 # -----------------------------
 
+origins = [
+
+    # Local development
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+
+    # Production frontend
+    "https://ai-stock-assistant-1-1p8y.onrender.com",
+
+]
+
+
 app.add_middleware(
 
     CORSMiddleware,
 
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://ai-stock-assistant-2-6upz.onrender.com"
-    ],
+    allow_origins=origins,
 
     allow_credentials=True,
 
@@ -143,7 +151,9 @@ app.add_middleware(
 # Routes
 # -----------------------------
 
-app.include_router(router)
+app.include_router(
+    router
+)
 
 app.include_router(
     analysis_router
