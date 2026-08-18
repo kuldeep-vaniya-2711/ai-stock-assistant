@@ -23,10 +23,12 @@ def generate_otp():
 # -----------------------------
 def save_otp(user_data, otp):
 
+    # Delete previous OTP for this email
     otp_collection.delete_many({
         "email": user_data.email
     })
 
+    # Save new OTP
     otp_collection.insert_one({
 
         "name": user_data.name,
@@ -37,6 +39,7 @@ def save_otp(user_data, otp):
 
         "otp": otp,
 
+        # Store expiry time in UTC
         "expires_at": datetime.now(timezone.utc) + timedelta(minutes=5)
 
     })
@@ -47,6 +50,7 @@ def save_otp(user_data, otp):
 # -----------------------------
 def create_and_send_otp(user_data):
 
+    # Check whether email is already registered
     existing = users.find_one({
 
         "email": user_data.email
@@ -63,10 +67,13 @@ def create_and_send_otp(user_data):
 
         }
 
+    # Generate OTP
     otp = generate_otp()
 
+    # Save OTP in MongoDB
     save_otp(user_data, otp)
 
+    # Send OTP through email
     success = send_email_otp(
 
         user_data.email,
@@ -75,6 +82,7 @@ def create_and_send_otp(user_data):
 
     )
 
+    # Terminal log
     print("\n" + "=" * 60)
     print("📧 Receiver Email :", user_data.email)
     print("🔐 Generated OTP  :", otp)
@@ -105,6 +113,7 @@ def create_and_send_otp(user_data):
 # -----------------------------
 def verify_otp(email, otp):
 
+    # Find OTP
     data = otp_collection.find_one({
 
         "email": email,
@@ -113,11 +122,34 @@ def verify_otp(email, otp):
 
     })
 
+    # OTP not found
     if data is None:
 
         return False
 
-    if datetime.now(timezone.utc) > data["expires_at"]:
+    # -----------------------------
+    # Handle MongoDB datetime
+    # -----------------------------
+
+    expires_at = data["expires_at"]
+
+    # PyMongo normally returns MongoDB
+    # datetime as naive UTC datetime.
+    #
+    # Convert it to timezone-aware UTC
+    # before comparing with datetime.now(timezone.utc).
+
+    if expires_at.tzinfo is None:
+
+        expires_at = expires_at.replace(
+            tzinfo=timezone.utc
+        )
+
+    # -----------------------------
+    # Check OTP expiry
+    # -----------------------------
+
+    if datetime.now(timezone.utc) > expires_at:
 
         otp_collection.delete_one({
 
@@ -126,6 +158,10 @@ def verify_otp(email, otp):
         })
 
         return False
+
+    # -----------------------------
+    # Check existing user
+    # -----------------------------
 
     existing = users.find_one({
 
@@ -143,13 +179,19 @@ def verify_otp(email, otp):
 
         return False
 
+    # -----------------------------
+    # Create new user
+    # -----------------------------
+
     users.insert_one({
 
         "name": data["name"],
 
         "email": data["email"],
 
-        "password": hash_password(data["password"]),
+        "password": hash_password(
+            data["password"]
+        ),
 
         "wallet": 5000.0,
 
@@ -158,6 +200,10 @@ def verify_otp(email, otp):
         "experience": 0
 
     })
+
+    # -----------------------------
+    # Create welcome notification
+    # -----------------------------
 
     create_notification(
 
@@ -169,9 +215,14 @@ def verify_otp(email, otp):
 
     )
 
+    # -----------------------------
+    # Telegram notification
+    # -----------------------------
+
     try:
 
-        now = datetime.now()
+        # Use UTC-aware datetime
+        now = datetime.now(timezone.utc)
 
         message = f"""
 🎉 <b>New User Registered</b>
@@ -184,7 +235,7 @@ def verify_otp(email, otp):
 
 📅 {now.strftime("%d-%m-%Y")}
 
-⏰ {now.strftime("%I:%M %p")}
+⏰ {now.strftime("%I:%M %p")} UTC
 """
 
         send_telegram(message)
@@ -193,12 +244,17 @@ def verify_otp(email, otp):
 
         print("Telegram Error:", e)
 
+    # -----------------------------
+    # Delete used OTP
+    # -----------------------------
+
     otp_collection.delete_one({
 
         "_id": data["_id"]
 
     })
 
+    # Registration successful
     return True
 
 
