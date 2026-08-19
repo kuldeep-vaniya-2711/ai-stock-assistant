@@ -5,116 +5,142 @@ import resend
 from dotenv import load_dotenv
 
 
-# -----------------------------
+# ==========================================
 # Load Environment Variables
-# -----------------------------
+# ==========================================
 
 load_dotenv()
 
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 
+RESEND_FROM_EMAIL = os.getenv(
+    "RESEND_FROM_EMAIL"
+)
 
-# -----------------------------
+
+# ==========================================
 # Send OTP Email
-# -----------------------------
+# ==========================================
 
 def send_email_otp(receiver_email, otp):
 
-    # Check API key
+    print("\n" + "=" * 60)
+    print("📧 Resend Email")
+    print("📨 Receiver :", receiver_email)
+    print("🔐 OTP      :", otp)
+    print("=" * 60)
+
+
+    # --------------------------------------
+    # Check API Key
+    # --------------------------------------
+
     if not RESEND_API_KEY:
 
-        print("❌ RESEND_API_KEY is missing.")
+        print(
+            "❌ RESEND_API_KEY is missing"
+        )
+
+        return False
+
+
+    # --------------------------------------
+    # Check From Email
+    # --------------------------------------
+
+    if not RESEND_FROM_EMAIL:
+
+        print(
+            "❌ RESEND_FROM_EMAIL is missing"
+        )
 
         return False
 
 
     try:
 
-        # Configure Resend
         resend.api_key = RESEND_API_KEY
 
 
-        # Email subject
-        subject = "AI Stock Assistant - Email Verification OTP"
+        # ----------------------------------
+        # Email Content
+        # ----------------------------------
 
-
-        # HTML email
-        html_body = f"""
-        <html>
-
-        <body>
-
-            <h2>AI Stock Assistant</h2>
-
-            <p>Hello,</p>
-
-            <p>
-                Your OTP for AI Stock Assistant is:
-            </p>
-
-            <h1
-                style="
-                    letter-spacing: 5px;
-                    color: #2563eb;
-                "
-            >
-                {otp}
-            </h1>
-
-            <p>
-                This OTP is valid for <b>5 minutes</b>.
-            </p>
-
-            <p>
-                Do not share this OTP with anyone.
-            </p>
-
-            <br>
-
-            <p>
-                Regards,<br>
-                <b>AI Stock Assistant</b>
-            </p>
-
-        </body>
-
-        </html>
-        """
-
-
-        # Resend parameters
         params = {
 
-            "from": "AI Stock Assistant <onboarding@resend.dev>",
+            "from": RESEND_FROM_EMAIL,
 
-            "to": [receiver_email],
+            "to": [
+                receiver_email
+            ],
 
-            "subject": subject,
+            "subject":
+                "AI Stock Assistant - Email Verification OTP",
 
-            "html": html_body
+            "html": f"""
+<!DOCTYPE html>
+
+<html>
+
+<body>
+
+<h2>
+AI Stock Assistant
+</h2>
+
+<p>
+Hello,
+</p>
+
+<p>
+Your OTP for email verification is:
+</p>
+
+<h1>
+{otp}
+</h1>
+
+<p>
+This OTP is valid for <b>5 minutes</b>.
+</p>
+
+<p>
+Please do not share this OTP with anyone.
+</p>
+
+<br>
+
+<p>
+Regards,<br>
+<b>AI Stock Assistant</b>
+</p>
+
+</body>
+
+</html>
+"""
 
         }
 
 
-        print("=" * 60)
+        # ----------------------------------
+        # Send
+        # ----------------------------------
 
-        print("📧 Resend Email")
-
-        print("📨 Receiver :", receiver_email)
-
-        print("🔐 OTP      :", otp)
-
-        print("🚀 Sending email through Resend...")
+        response = resend.Emails.send(
+            params
+        )
 
 
-        # Send email
-        response = resend.Emails.send(params)
+        print(
+            "✅ Resend Email Sent"
+        )
 
-
-        print("✅ Resend Response:", response)
-
-        print("=" * 60)
+        print(
+            "📨 Resend Response:",
+            response
+        )
 
 
         return True
@@ -122,10 +148,9 @@ def send_email_otp(receiver_email, otp):
 
     except Exception as e:
 
-        print("=" * 60)
-
-        print("❌ Resend Email Error:", e)
-
-        print("=" * 60)
+        print(
+            "❌ Resend Email Error:",
+            e
+        )
 
         return False
