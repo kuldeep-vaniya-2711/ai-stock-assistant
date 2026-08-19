@@ -1,156 +1,131 @@
 import os
-import smtplib
 
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import resend
 
 from dotenv import load_dotenv
 
 
-# --------------------------------------------------
+# -----------------------------
 # Load Environment Variables
-# --------------------------------------------------
+# -----------------------------
 
 load_dotenv()
 
-EMAIL = os.getenv("EMAIL_ADDRESS")
-PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 
 
-# --------------------------------------------------
+# -----------------------------
 # Send OTP Email
-# --------------------------------------------------
+# -----------------------------
 
 def send_email_otp(receiver_email, otp):
 
-    # Check credentials
-    if not EMAIL:
-        print("❌ EMAIL_ADDRESS is missing")
+    # Check API key
+    if not RESEND_API_KEY:
+
+        print("❌ RESEND_API_KEY is missing.")
 
         return False
 
-    if not PASSWORD:
-        print("❌ EMAIL_PASSWORD is missing")
-
-        return False
-
-    print("📧 SMTP Email:", EMAIL)
-    print("🔐 SMTP Password Loaded:", bool(PASSWORD))
-    print("📨 Receiver:", receiver_email)
-
-    subject = "AI Stock Assistant - Email Verification OTP"
-
-    body = f"""
-Hello,
-
-Your OTP for AI Stock Assistant is:
-
-{otp}
-
-This OTP is valid for 5 minutes.
-
-Do not share this OTP with anyone.
-
-Regards,
-AI Stock Assistant
-"""
-
-    # --------------------------------------------------
-    # Create Email
-    # --------------------------------------------------
-
-    message = MIMEMultipart()
-
-    message["From"] = EMAIL
-    message["To"] = receiver_email
-    message["Subject"] = subject
-
-    message.attach(
-        MIMEText(body, "plain")
-    )
-
-    server = None
 
     try:
 
-        print("🔄 Connecting to Gmail SMTP...")
+        # Configure Resend
+        resend.api_key = RESEND_API_KEY
 
-        server = smtplib.SMTP(
-            "smtp.gmail.com",
-            587,
-            timeout=30
-        )
 
-        print("✅ SMTP Connection Established")
+        # Email subject
+        subject = "AI Stock Assistant - Email Verification OTP"
 
-        server.ehlo()
 
-        server.starttls()
+        # HTML email
+        html_body = f"""
+        <html>
 
-        server.ehlo()
+        <body>
 
-        print("🔐 Logging into Gmail...")
+            <h2>AI Stock Assistant</h2>
 
-        server.login(
-            EMAIL,
-            PASSWORD
-        )
+            <p>Hello,</p>
 
-        print("✅ Gmail Authentication Successful")
+            <p>
+                Your OTP for AI Stock Assistant is:
+            </p>
 
-        server.sendmail(
-            EMAIL,
-            receiver_email,
-            message.as_string()
-        )
+            <h1
+                style="
+                    letter-spacing: 5px;
+                    color: #2563eb;
+                "
+            >
+                {otp}
+            </h1>
 
-        print("✅ OTP Email Sent Successfully")
+            <p>
+                This OTP is valid for <b>5 minutes</b>.
+            </p>
+
+            <p>
+                Do not share this OTP with anyone.
+            </p>
+
+            <br>
+
+            <p>
+                Regards,<br>
+                <b>AI Stock Assistant</b>
+            </p>
+
+        </body>
+
+        </html>
+        """
+
+
+        # Resend parameters
+        params = {
+
+            "from": "AI Stock Assistant <onboarding@resend.dev>",
+
+            "to": [receiver_email],
+
+            "subject": subject,
+
+            "html": html_body
+
+        }
+
+
+        print("=" * 60)
+
+        print("📧 Resend Email")
+
+        print("📨 Receiver :", receiver_email)
+
+        print("🔐 OTP      :", otp)
+
+        print("🚀 Sending email through Resend...")
+
+
+        # Send email
+        response = resend.Emails.send(params)
+
+
+        print("✅ Resend Response:", response)
+
+        print("=" * 60)
+
 
         return True
 
-    except smtplib.SMTPAuthenticationError as e:
-
-        print(
-            "❌ Gmail Authentication Error:",
-            e
-        )
-
-        print(
-            "⚠️ Check EMAIL_ADDRESS and EMAIL_PASSWORD."
-        )
-
-        print(
-            "⚠️ EMAIL_PASSWORD must be a Gmail App Password."
-        )
-
-        return False
-
-    except smtplib.SMTPException as e:
-
-        print(
-            "❌ SMTP Error:",
-            e
-        )
-
-        return False
 
     except Exception as e:
 
-        print(
-            "❌ Email Error:",
-            e
-        )
+        print("=" * 60)
+
+        print("❌ Resend Email Error:", e)
+
+        print("=" * 60)
 
         return False
-
-    finally:
-
-        if server:
-
-            try:
-
-                server.quit()
-
-            except Exception:
-
-                pass
